@@ -5,20 +5,31 @@
     <title>My Chrome Extension</title>
     <link rel="stylesheet" href="popup.css" />
   </head>
-  <body>
-    <div class="app">
-      <p class="counter-label">Counter</p>
-      <div id="counter" class="counter"></div>
-      <div class="button-container">
-        <button id="decrementBtn" class="button">-</button>
-        <button id="incrementBtn" class="button">+</button>
-      </div>
-
-      <hr class="divider" />
-
-      <p class="title">Chrome Extension is Ready!</p>
-      <p class="subtitle">Start by updating <code>popup.html</code></p>
+  <body class="w-72 my-2 bg-gray-950 antialiased">
+    <div class="mb-2 p-2 bg-gray-800 block">
+      <h1 class="text-xl text-gray-100 text-center font-sans font-medium">
+        Chinese English Dictionary
+      </h1>
     </div>
+
+    <main class="block">
+      <div class="p-2">
+        <p class="mb-2 text-gray-200">
+          Dictionary that looks up Pinyin and English definition of Chinese
+          characters and phrases.
+        </p>
+        <form class="flex">
+          <input
+            id="character-input"
+            class="mr-2 px-2 py-1 bg-gray-800 focus:bg-gray-100 text-gray-50 focus:text-gray-950 flex-1 rounded-lg"
+            type="text"
+            placeholder="Enter a Chinese word or phrase"
+          />
+
+          <button class="px-2 py-1 bg-emerald-700 text-gray-100 rounded-lg">Search</button>
+        </form>
+      </div>
+    </main>
 
     <script src="popup.js"></script>
 
