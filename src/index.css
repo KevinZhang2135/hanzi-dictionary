@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@theme {
+  --color-midnight-900: #242424;
+  --color-midnight-950: #1a1a1a;
+}
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+
+  color-scheme: dark;
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
