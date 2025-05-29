@@ -1,6 +1,9 @@
 @import "tailwindcss";
 
 @theme {
+  --color-midnight-600: #606060;
+  --color-midnight-700: #4c4c4c;
+  --color-midnight-800: #383838;
   --color-midnight-900: #242424;
   --color-midnight-950: #1a1a1a;
 }
@@ -9,10 +12,15 @@
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 
   color-scheme: dark;
-  background-color: #242424;
+  background-color: #1a1a1a;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0 auto;
+  max-width: 800px;
 }
