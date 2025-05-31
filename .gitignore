@@ -27,3 +27,8 @@ build
 
 .prettierrc
 .eslintrc.cjs
+
+# Python Venv and Dependency Mangagement
+.venv
+
+requirements.in
