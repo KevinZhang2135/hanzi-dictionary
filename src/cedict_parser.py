@@ -28,14 +28,15 @@ def parse_line(line: str) -> dict:
     parsed_line[-1] = parsed_line[-1].split('/')
 
     keys = ['traditional', 'simplified', 'pinyin', 'glossary']
-    phrase = { key:value for (key, value) in zip(keys, parsed_line)}
+    phrase = {key: value for (key, value) in zip(keys, parsed_line)}
 
     return phrase
 
+
 if __name__ == '__main__':
-    # Index mappings for simplified and traditional characters onto the same 
+    # Index mappings for simplified and traditional characters onto the same
     # dictionary entry
-    char_mapping = {} 
+    char_mapping = {}
     dict_entries = []
 
     # Open CEDICT file
@@ -44,20 +45,28 @@ if __name__ == '__main__':
             # Inserts phrase into dictionary and creates index mappings for characters
             phrase = parse_line(line.strip())
 
-            char_mapping[phrase['traditional']] \
-                = char_mapping[phrase['simplified']] \
-                = len(dict_entries)
+            # Mappings store a set of indices of dictionary entries for terms
+            # with multiple definitions
+            if phrase['traditional'] not in char_mapping:
+                char_mapping[phrase['traditional']] = set()
 
+            if phrase['simplified'] not in char_mapping:
+                char_mapping[phrase['simplified']] = set()
+
+            char_mapping[phrase['traditional']].add(len(dict_entries))
+            char_mapping[phrase['simplified']].add(len(dict_entries))
+
+
+            # Adds phrase to the dictionary
             dict_entries.append(phrase)
-    
+
+    # Convert sets to lists for JSON serialization
+    for key in char_mapping:
+        char_mapping[key] = list(char_mapping[key])
+
     # Outputs character mappings and dictionary as json files
-    with open(OUTPUT_MAPPINGS_PATH, 'w') as mappings_json:
-        print(json.dumps(char_mapping), file=mappings_json)
+    with open(OUTPUT_MAPPINGS_PATH, 'w', encoding='utf-8') as mappings_json:
+        json.dump(char_mapping, mappings_json, ensure_ascii=False)
 
-    with open(OUTPUT_DICTIONARY_PATH, 'w') as dict_json:
-        print(json.dumps(dict_entries), file=dict_json)
-
-
-
-    
-            
+    # with open(OUTPUT_DICTIONARY_PATH, 'w', encoding='utf-8') as dict_json:
+    #     json.dump(dict_entries, dict_json, ensure_ascii=False)
