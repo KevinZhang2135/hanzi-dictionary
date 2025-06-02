@@ -7,7 +7,7 @@ from parse import parse
 # Assumes the parser is run from the src directory
 INPUT_CEDICT_PATH = '../public/cedict_ts.u8'
 
-OUTPUT_MAPPINGS_PATH = '../public/trad_simp_mappings.json'
+OUTPUT_MAPPINGS_PATH = '../public/char_mappings.json'
 OUTPUT_DICTIONARY_PATH = '../public/cedict_ts.json'
 
 
@@ -56,7 +56,6 @@ if __name__ == '__main__':
             char_mapping[phrase['traditional']].add(len(dict_entries))
             char_mapping[phrase['simplified']].add(len(dict_entries))
 
-
             # Adds phrase to the dictionary
             dict_entries.append(phrase)
 
@@ -65,8 +64,7 @@ if __name__ == '__main__':
         char_mapping[key] = list(char_mapping[key])
 
     # Outputs character mappings and dictionary as json files
-    with open(OUTPUT_MAPPINGS_PATH, 'w', encoding='utf-8') as mappings_json:
+    with (open(OUTPUT_MAPPINGS_PATH, 'w', encoding='utf-8') as mappings_json,
+            open(OUTPUT_DICTIONARY_PATH, 'w', encoding='utf-8') as dict_json):
         json.dump(char_mapping, mappings_json, ensure_ascii=False)
-
-    # with open(OUTPUT_DICTIONARY_PATH, 'w', encoding='utf-8') as dict_json:
-    #     json.dump(dict_entries, dict_json, ensure_ascii=False)
+        json.dump(dict_entries, dict_json, ensure_ascii=False)
