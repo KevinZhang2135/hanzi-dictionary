@@ -7,13 +7,13 @@
   --color-midnight-900: #242424;
   --color-midnight-950: #1a1a1a;
 
-  --animate-appear: appear 1s ease-in-out;
-  @keyframes appear: {
+  --animate-appear: appear 0.5s ease-in-out;
+  @keyframes appear {
     0% {
-      opacity: "0",
-    },
+      opacity: 0;
+    }
     100% {
-      opacity: "1",
+      opacity: 1;
     }
   }
 }

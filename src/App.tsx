@@ -1,6 +1,7 @@
-import { ReactNode, useState } from 'react';
 import './App.css';
 
+import { ReactNode, useState } from 'react';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import SearchTerm, { TermEntry } from './components/SearchTerm';
 
 // Imports dictionary entries for Chinese characters and phrases and mappings
@@ -57,7 +58,7 @@ const App = (): ReactNode => {
   };
 
   return (
-    <div className="*:py-2 *:first:pt-0 *:last:pb-0">
+    <div className="*:my-4 *:first:mt-0 *:last:mb-0">
       <div className="">
         <h1 className="text-3xl text-zinc-100 font-medium">
           Chinese English Dictionary
@@ -71,11 +72,16 @@ const App = (): ReactNode => {
 
       {/* Search History and Definitions */}
       {searchHistory.length > 0 && (
-        <div>
-          {searchHistory.map((termEntry, index) => {
+        <div className="*:my-2 *:first:mt-0 *:last:mb-0">
+          {searchHistory.map((entry, index) => {
+            let termEntry = entry as unknown as TermEntry;
+
             return (
-              <div key={`search-history-${index}`}>
-                <SearchTerm termEntry={termEntry as unknown as TermEntry} />
+              <div
+                key={`search-history-${termEntry.traditional}-${index}`}
+                className="animate-appear"
+              >
+                <SearchTerm termEntry={termEntry} />
               </div>
             );
           })}
@@ -83,11 +89,15 @@ const App = (): ReactNode => {
       )}
 
       {/* Search Input */}
-      <div className="flex sticky bottom-8">
+      <div
+        className="animate-appear flex sticky bottom-8 
+        *:px-4 *:py-3 *:text-zinc-950 *:rounded-lg"
+      >
         <input
           id="character-input"
-          className="mr-4 px-4 py-3 bg-zinc-100 text-zinc-950 flex-1 rounded-lg
-                placeholder:text-zinc-700 placeholder:italic"
+          className="mr-4 bg-zinc-100 flex-1
+                placeholder:text-zinc-700 placeholder:italic
+                focus:ring-4 focus:ring-rose-500"
           type="text"
           value={searchTerm}
           placeholder="Enter a Chinese character or phrase"
@@ -97,10 +107,12 @@ const App = (): ReactNode => {
         />
 
         <button
-          className="px-4 py-3 bg-rose-500 text-zinc-950 font-medium rounded-lg cursor-pointer 
-                transition-color duration-300 active:bg-rose-600"
+          className="flex items-center
+            bg-rose-500 font-medium cursor-pointer 
+                transition duration-300 active:bg-rose-600"
           onClick={() => enterSearchTerm()}
         >
+          <MagnifyingGlassIcon className="text-zinc-950 size-5 mr-2"/>
           Search
         </button>
       </div>
