@@ -6,7 +6,7 @@ import SearchTerm, { TermEntry } from './components/SearchTerm';
 // Imports dictionary entries for Chinese characters and phrases and mappings
 // for traditional and simplified characters
 const dictEntries = await (
-  await fetch('cedict_ts.json', {
+  await fetch('cedict-ts.json', {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
@@ -15,7 +15,7 @@ const dictEntries = await (
 ).json();
 
 const charMappings = await (
-  await fetch('char_mappings.json', {
+  await fetch('char-mappings.json', {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
@@ -57,36 +57,37 @@ const App = (): ReactNode => {
   };
 
   return (
-    <div className="*:px-4 *:py-2 *:first:pt-0 *:last:pb-0">
-      <div className="px-4 block">
-        <h1 className="text-3xl text-gray-100 font-medium">
+    <div className="*:py-2 *:first:pt-0 *:last:pb-0">
+      <div className="">
+        <h1 className="text-3xl text-zinc-100 font-medium">
           Chinese English Dictionary
         </h1>
       </div>
 
-      <p className="flex-grow text-gray-200">
+      <p className="text-zinc-200">
         Dictionary that looks up Pinyin and English definition of Chinese
         characters and phrases.
       </p>
 
       {/* Search History and Definitions */}
-      <div className="flex-grow">
-        {searchHistory.map((termEntry, index) => {
-          return (
-            <div key={`search-history-${index}`}>
-              <SearchTerm termEntry={termEntry as unknown as TermEntry} />
-            </div>
-          );
-        })}
-      </div>
+      {searchHistory.length > 0 && (
+        <div>
+          {searchHistory.map((termEntry, index) => {
+            return (
+              <div key={`search-history-${index}`}>
+                <SearchTerm termEntry={termEntry as unknown as TermEntry} />
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Search Input */}
-      <div className="flex sticky bottom-4">
+      <div className="flex sticky bottom-8">
         <input
           id="character-input"
-          className="mr-4 px-4 py-3 bg-gray-100 text-gray-950 flex-1 rounded-lg
-                placeholder:text-gray-800 placeholder:italic  
-                transition-colors duration-200"
+          className="mr-4 px-4 py-3 bg-zinc-100 text-zinc-950 flex-1 rounded-lg
+                placeholder:text-zinc-700 placeholder:italic"
           type="text"
           value={searchTerm}
           placeholder="Enter a Chinese character or phrase"
@@ -96,8 +97,8 @@ const App = (): ReactNode => {
         />
 
         <button
-          className="px-4 py-3 bg-rose-500 text-gray-950 font-medium rounded-lg 
-                transition-color duration-200 hover:bg-rose-400"
+          className="px-4 py-3 bg-rose-500 text-zinc-950 font-medium rounded-lg cursor-pointer 
+                transition-color duration-300 active:bg-rose-600"
           onClick={() => enterSearchTerm()}
         >
           Search

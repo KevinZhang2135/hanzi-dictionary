@@ -1,7 +1,7 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
-import tailwindcss from '@tailwindcss/vite'
+import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   plugins: [
@@ -12,7 +12,7 @@ export default defineConfig({
         {
           src: 'public/manifest.json',
           dest: '.',
-        }
+        },
       ],
     }),
   ],
@@ -22,6 +22,11 @@ export default defineConfig({
       input: {
         main: './index.html',
       },
+    },
+  },
+  esbuild: {
+    supported: {
+      'top-level-await': true, //browsers can handle top-level-await features
     },
   },
 });

@@ -7,8 +7,8 @@ from parse import parse
 # Assumes the parser is run from the src directory
 INPUT_CEDICT_PATH = '../public/cedict_ts.u8'
 
-OUTPUT_MAPPINGS_PATH = '../public/char_mappings.json'
-OUTPUT_DICTIONARY_PATH = '../public/cedict_ts.json'
+OUTPUT_MAPPINGS_PATH = '../public/char-mappings.json'
+OUTPUT_DICTIONARY_PATH = '../public/cedict-ts.json'
 
 
 def parse_line(line: str) -> dict:
