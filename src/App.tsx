@@ -1,25 +1,25 @@
-import './App.css';
+import "./App.css";
 
-import { ReactNode, useState } from 'react';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
-import SearchTerm, { TermEntry } from './components/SearchTerm';
+import { ReactNode, useState } from "react";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import DefinitionDeck, { TermDefinition } from "./components/DefinitionDeck";
 
 // Imports dictionary entries for Chinese characters and phrases and mappings
 // for traditional and simplified characters
 const dictEntries = await (
-  await fetch('cedict-ts.json', {
+  await fetch("cedict-ts.json", {
     headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
+      "Content-Type": "application/json",
+      Accept: "application/json",
     },
   })
 ).json();
 
 const charMappings = await (
-  await fetch('char-mappings.json', {
+  await fetch("char-mappings.json", {
     headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
+      "Content-Type": "application/json",
+      Accept: "application/json",
     },
   })
 ).json();
@@ -31,7 +31,7 @@ const charMappings = await (
  * @returns The dictionary entry object for the specified term, or null if the
  *   term does not exist
  */
-const getDictEntry = (term: string): string | null => {
+const getDictEntry = (term: string): TermDefinition[] | null => {
   // Check if the term exists in the dictionary entries
   if (charMappings[term]) {
     return charMappings[term].map((index: number) => dictEntries[index]);
@@ -41,20 +41,20 @@ const getDictEntry = (term: string): string | null => {
 };
 
 const App = (): ReactNode => {
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [searchHistory, setSearchHistory] = useState<string[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [searchDefinitions, setSearchDefinitions] = useState<TermDefinition[]>([]);
 
   const enterSearchTerm = () => {
     const entry = getDictEntry(searchTerm);
     if (entry) {
-      setSearchHistory([...entry]);
+      setSearchDefinitions([...entry]);
     }
 
-    setSearchTerm('');
+    setSearchTerm("");
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    e.key === 'Enter' && enterSearchTerm();
+    e.key === "Enter" && enterSearchTerm();
   };
 
   return (
@@ -71,22 +71,10 @@ const App = (): ReactNode => {
       </p>
 
       {/* Search History and Definitions */}
-      {searchHistory.length > 0 && (
-        <div className="*:my-2 *:first:mt-0 *:last:mb-0">
-          {searchHistory.map((entry, index) => {
-            let termEntry = entry as unknown as TermEntry;
-
-            return (
-              <div
-                key={`search-history-${termEntry.traditional}-${index}`}
-                className="animate-appear"
-              >
-                <SearchTerm termEntry={termEntry} />
-              </div>
-            );
-          })}
-        </div>
-      )}
+      <DefinitionDeck
+        isDisplayed={searchDefinitions.length > 0}
+        searchDefinitions={searchDefinitions}
+      />
 
       {/* Search Input */}
       <div
@@ -96,8 +84,7 @@ const App = (): ReactNode => {
         <input
           id="character-input"
           className="mr-4 bg-zinc-100 flex-1
-                placeholder:text-zinc-700 placeholder:italic
-                focus:ring-4 focus:ring-rose-500"
+                placeholder:text-zinc-700 placeholder:italic"
           type="text"
           value={searchTerm}
           placeholder="Enter a Chinese character or phrase"
@@ -112,7 +99,7 @@ const App = (): ReactNode => {
                 transition duration-300 active:bg-rose-600"
           onClick={() => enterSearchTerm()}
         >
-          <MagnifyingGlassIcon className="text-zinc-950 size-5 mr-2"/>
+          <MagnifyingGlassIcon className="text-zinc-950 size-5 mr-2" />
           Search
         </button>
       </div>
