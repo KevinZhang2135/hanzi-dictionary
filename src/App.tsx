@@ -3,13 +3,14 @@ import "./App.css";
 
 // React and component
 import { ReactNode, useState } from "react";
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import {
+  MagnifyingGlassIcon,
+  ViewfinderCircleIcon,
+} from "@heroicons/react/24/outline";
 import DefinitionDeck, { TermDefinition } from "./components/DefinitionDeck";
 
 // Chinese phrase segmenter
-// import init from 'jieba-wasm';
-// await init();
-// console.log(cut("中华人民共和国武汉市长江大桥", true));
+import init, { cut } from "jieba-wasm";
 
 // Imports dictionary entries for Chinese characters and phrases and mappings
 // for traditional and simplified characters
@@ -48,6 +49,8 @@ const getDictEntry = (term: string): TermDefinition[] | null => {
 };
 
 const App = (): ReactNode => {
+  init().then(() => console.log(cut("中华人民共和国武汉市长江大桥")));
+
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [searchDefinitions, setSearchDefinitions] = useState<TermDefinition[]>(
     []
@@ -90,28 +93,37 @@ const App = (): ReactNode => {
       {/* Search Input */}
       <div
         id="search-input"
-        className="animate-appear flex sticky bottom-8 
-        *:px-4 *:py-3 *:text-zinc-100 *:rounded-lg"
+        className="animate-appear flex flex-col sm:flex-row sticky bottom-8 gap-4"
       >
-        <input
-          id="character-input"
-          className="mr-4 bg-zinc-950 flex-1
-                placeholder:text-zinc-200 placeholder:italic"
-          type="text"
-          value={searchTerm}
-          placeholder="Enter a Chinese character or phrase"
-          autoComplete="off"
-          onChange={(e) => setSearchTerm(e.target.value)}
-          onKeyDown={(e) => handleKeyDown(e)}
-        />
+        <div className="*:px-4 *:py-3 *:bg-zinc-950 flex flex-1">
+          <input
+            id="character-input"
+            className="flex-1 bg-zinc-950 text-zinc-100 rounded-l-lg
+                placeholder:text-zinc-300 placeholder:italic"
+            type="text"
+            value={searchTerm}
+            placeholder="Enter a Chinese character or phrase"
+            autoComplete="off"
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyDown={(e) => handleKeyDown(e)}
+          />
+
+          <button
+            className="rounded-r-lg cursor-pointer
+            transition-color duration-300 hover:text-rose-500"
+            onClick={() => enterSearchTerm()}
+          >
+            <ViewfinderCircleIcon className="stroke-1 size-6" />
+          </button>
+        </div>
 
         <button
-          className="flex items-center
-            bg-rose-500 font-medium cursor-pointer 
-                transition duration-300 hover:bg-rose-400 active:bg-rose-600"
+          className="px-4 py-3 flex items-center rounded-lg
+            bg-rose-500 text-zinc-100 font-medium cursor-pointer 
+            transition-color duration-300 hover:bg-rose-400 active:bg-rose-600"
           onClick={() => enterSearchTerm()}
         >
-          <MagnifyingGlassIcon className="text-zinc-200 size-5 mr-2" />
+          <MagnifyingGlassIcon className="size-5 mr-2" />
           Search
         </button>
       </div>
