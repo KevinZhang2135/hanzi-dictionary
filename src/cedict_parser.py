@@ -1,6 +1,5 @@
 # Parser that extracts lines from the CEDICT Chinese-English dictionary and
 # exports them as a JSON file.
-
 import json
 from parse import parse
 

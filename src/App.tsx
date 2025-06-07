@@ -1,8 +1,15 @@
+// Styling
 import "./App.css";
 
+// React and component
 import { ReactNode, useState } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import DefinitionDeck, { TermDefinition } from "./components/DefinitionDeck";
+
+// Chinese phrase segmenter
+// import init from 'jieba-wasm';
+// await init();
+// console.log(cut("中华人民共和国武汉市长江大桥", true));
 
 // Imports dictionary entries for Chinese characters and phrases and mappings
 // for traditional and simplified characters
@@ -33,7 +40,7 @@ const charMappings = await (
  */
 const getDictEntry = (term: string): TermDefinition[] | null => {
   // Check if the term exists in the dictionary entries
-  if (charMappings[term]) {
+  if (term in charMappings) {
     return charMappings[term].map((index: number) => dictEntries[index]);
   }
 
@@ -42,15 +49,21 @@ const getDictEntry = (term: string): TermDefinition[] | null => {
 
 const App = (): ReactNode => {
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [searchDefinitions, setSearchDefinitions] = useState<TermDefinition[]>([]);
+  const [searchDefinitions, setSearchDefinitions] = useState<TermDefinition[]>(
+    []
+  );
 
   const enterSearchTerm = () => {
     const entry = getDictEntry(searchTerm);
+    setSearchTerm("");
+
     if (entry) {
       setSearchDefinitions([...entry]);
+    } else {
+      // If the term is not immediately in the dictionary, segments the phrase
+      // into smaller segments as suggestions to search
+      // console.log(cut("中华人民共和国武汉市长江大桥", true));
     }
-
-    setSearchTerm("");
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -59,11 +72,9 @@ const App = (): ReactNode => {
 
   return (
     <div className="*:my-4 *:first:mt-0 *:last:mb-0">
-      <div className="">
-        <h1 className="text-3xl text-zinc-100 font-medium">
-          Chinese English Dictionary
-        </h1>
-      </div>
+      <h1 className="text-3xl text-zinc-100 font-medium">
+        Chinese English Dictionary
+      </h1>
 
       <p className="text-zinc-200">
         Dictionary that looks up Pinyin and English definition of Chinese
@@ -78,13 +89,14 @@ const App = (): ReactNode => {
 
       {/* Search Input */}
       <div
+        id="search-input"
         className="animate-appear flex sticky bottom-8 
-        *:px-4 *:py-3 *:text-zinc-950 *:rounded-lg"
+        *:px-4 *:py-3 *:text-zinc-100 *:rounded-lg"
       >
         <input
           id="character-input"
-          className="mr-4 bg-zinc-100 flex-1
-                placeholder:text-zinc-700 placeholder:italic"
+          className="mr-4 bg-zinc-950 flex-1
+                placeholder:text-zinc-200 placeholder:italic"
           type="text"
           value={searchTerm}
           placeholder="Enter a Chinese character or phrase"
@@ -96,10 +108,10 @@ const App = (): ReactNode => {
         <button
           className="flex items-center
             bg-rose-500 font-medium cursor-pointer 
-                transition duration-300 active:bg-rose-600"
+                transition duration-300 hover:bg-rose-400 active:bg-rose-600"
           onClick={() => enterSearchTerm()}
         >
-          <MagnifyingGlassIcon className="text-zinc-950 size-5 mr-2" />
+          <MagnifyingGlassIcon className="text-zinc-200 size-5 mr-2" />
           Search
         </button>
       </div>

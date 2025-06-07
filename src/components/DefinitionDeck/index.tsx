@@ -1,6 +1,8 @@
+// React and components
 import { ReactNode } from "react";
 import DefinitionCard from "./DefinitionCard";
 
+// TS types
 interface TermDefinition {
   traditional: string;
   simplified: string;
@@ -18,7 +20,7 @@ const DefinitionDeck = (props: {
   }
 
   return (
-    <div className="*:my-2 *:first:mt-0 *:last:mb-0">
+    <div id="definition-deck" className="*:my-2 *:first:mt-0 *:last:mb-0">
       {searchDefinitions.map((element, index) => {
         const definition = element as unknown as TermDefinition;
 

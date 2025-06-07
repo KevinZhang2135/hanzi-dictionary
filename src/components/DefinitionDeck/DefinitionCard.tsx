@@ -1,4 +1,7 @@
+// React and components
 import { ReactNode } from "react";
+
+// TS types
 import { TermDefinition } from ".";
 
 const DefinitionCard = (props: { definition: TermDefinition }): ReactNode => {
