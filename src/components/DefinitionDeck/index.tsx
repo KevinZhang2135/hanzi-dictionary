@@ -12,16 +12,14 @@ interface TermDefinition {
 
 const DefinitionDeck = (props: {
   isDisplayed: boolean;
-  searchDefinitions: TermDefinition[];
+  definitions: TermDefinition[];
 }): ReactNode => {
-  const { isDisplayed, searchDefinitions } = props;
-  if (!isDisplayed) {
-    return;
-  }
-
+  const { isDisplayed, definitions } = props;
+  if (!isDisplayed) return;
+  
   return (
-    <div id="definition-deck" className="*:my-2 *:first:mt-0 *:last:mb-0">
-      {searchDefinitions.map((element, index) => {
+    <div className="*:my-2 *:first:mt-0 *:last:mb-0">
+      {definitions.map((element, index) => {
         const definition = element as unknown as TermDefinition;
 
         return (

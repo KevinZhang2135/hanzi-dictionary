@@ -1,5 +1,6 @@
 # Parser that extracts lines from the CEDICT Chinese-English dictionary and
 # exports them as a JSON file.
+
 import json
 from parse import parse
 
@@ -28,6 +29,7 @@ def parse_line(line: str) -> dict:
 
     keys = ['traditional', 'simplified', 'pinyin', 'glossary']
     phrase = {key: value for (key, value) in zip(keys, parsed_line)}
+    phrase['pinyin'] = phrase['pinyin'].lower()
 
     return phrase
 

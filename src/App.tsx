@@ -10,12 +10,9 @@ import {
 import DefinitionDeck, { TermDefinition } from "./components/DefinitionDeck";
 
 // Chinese phrase segmenter
-// Vite is finicky with wasm, so they have to loaded as static assets from the public folder
-// Wasm is found from the npm package "jieba-wasm"
 import init, { cut } from "jieba-wasm";
-init().then(() => {
-  console.log(cut("中华人民共和国武汉市长江大桥", true));
-});
+import SegmentSuggestions from "./components/SegmentSuggestions";
+await init();
 
 // Imports dictionary entries for Chinese characters and phrases and mappings
 // for traditional and simplified characters
@@ -55,25 +52,37 @@ const getDictEntry = (term: string): TermDefinition[] | null => {
 
 const App = (): ReactNode => {
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [searchDefinitions, setSearchDefinitions] = useState<TermDefinition[]>(
-    []
-  );
+  const [segments, setSegments] = useState<string[]>([]);
 
-  const enterSearchTerm = () => {
-    const entry = getDictEntry(searchTerm);
+  const [definitions, setDefinitions] = useState<TermDefinition[]>([]);
+
+  /**
+   * Looks up the term in the dictionary and clears the {@code searchTerm}. If
+   * the term exists, all definitions are outputted to {@code definitions}.
+   * Otherwise, if the term is not immediately in the dictionary, the phrase
+   * is segmented into smaller segments in {@code segments}
+   * @param {string} term The phrase to look up
+   */
+  const enterSearchTerm = (term: string) => {
+    if (!term) return;
+
+    const entry = getDictEntry(term);
     setSearchTerm("");
 
     if (entry) {
-      setSearchDefinitions([...entry]);
+      setDefinitions([...entry]);
     } else {
-      // If the term is not immediately in the dictionary, segments the phrase
-      // into smaller segments as suggestions to search
-      // console.log(cut("中华人民共和国武汉市长江大桥", true));
+      setSegments(cut(term, true).filter((segment) => segment in charMappings));
     }
   };
 
+  /**
+   * Searches the input as if the search button was pressed upon pressing the
+   * enter key
+   * @param {React.KeyboardEvent<HTMLInputElement>} e Browser event
+   */
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    e.key === "Enter" && enterSearchTerm();
+    e.key === "Enter" && enterSearchTerm(searchTerm);
   };
 
   return (
@@ -89,46 +98,56 @@ const App = (): ReactNode => {
 
       {/* Search History and Definitions */}
       <DefinitionDeck
-        isDisplayed={searchDefinitions.length > 0}
-        searchDefinitions={searchDefinitions}
+        isDisplayed={definitions.length > 0}
+        definitions={definitions}
       />
 
-      {/* Search Input */}
-      <div
-        id="search-input"
-        className="animate-appear flex flex-col sm:flex-row sticky bottom-8 gap-4"
-      >
-        <div className="*:px-4 *:py-4 *:bg-zinc-950 flex flex-1">
-          <input
-            id="character-input"
-            className="flex-1 bg-zinc-950 text-zinc-100 rounded-l-lg
+      <div className="sticky bottom-8">
+        {/* Segment Suggestions */}
+        <SegmentSuggestions
+          isDisplayed={segments.length > 0}
+          segments={segments}
+          enterSearchTerm={enterSearchTerm}
+        />
+
+        {/* Search Input */}
+        <form
+          id="search-input"
+          className="animate-appear flex flex-col sm:flex-row gap-2"
+          onSubmit={(e) => e.preventDefault()}
+        >
+          <div className="*:px-4 *:py-3 *:bg-zinc-950 flex flex-1">
+            <input
+              id="character-input"
+              className=" flex-1 bg-zinc-950 text-zinc-100 rounded-l-lg
                 placeholder:text-zinc-300 placeholder:italic"
-            type="text"
-            value={searchTerm}
-            placeholder="Enter a Chinese character or phrase"
-            autoComplete="off"
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyDown={(e) => handleKeyDown(e)}
-          />
+              type="text"
+              value={searchTerm}
+              placeholder="Enter a Chinese character or phrase"
+              autoComplete="off"
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={(e) => handleKeyDown(e)}
+            />
+
+            <button
+              className="rounded-r-lg cursor-pointer
+            transition-color duration-300 hover:text-rose-500"
+              type="submit"
+            >
+              <ViewfinderCircleIcon className="stroke-1 size-6" />
+            </button>
+          </div>
 
           <button
-            className="rounded-r-lg cursor-pointer
-            transition-color duration-300 hover:text-rose-500"
-            onClick={() => enterSearchTerm()}
-          >
-            <ViewfinderCircleIcon className="stroke-1 size-6" />
-          </button>
-        </div>
-
-        <button
-          className="px-4 py-4 flex items-center rounded-lg
+            className="px-4 py-3 flex items-center rounded-lg
             bg-rose-500 text-zinc-100 font-medium cursor-pointer 
             transition-color duration-300 hover:bg-rose-400 active:bg-rose-600"
-          onClick={() => enterSearchTerm()}
-        >
-          <MagnifyingGlassIcon className="size-5 mr-2" />
-          Search
-        </button>
+            onClick={() => enterSearchTerm(searchTerm)}
+          >
+            <MagnifyingGlassIcon className="size-5 mr-2" />
+            Search
+          </button>
+        </form>
       </div>
     </div>
   );
