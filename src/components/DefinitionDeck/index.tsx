@@ -18,7 +18,7 @@ const DefinitionDeck = (props: {
   if (!isDisplayed) return;
   
   return (
-    <div className="*:my-2 *:first:mt-0 *:last:mb-0">
+    <div className="flex flex-col gap-2">
       {definitions.map((element, index) => {
         const definition = element as unknown as TermDefinition;
 

@@ -87,7 +87,7 @@ const App = (): ReactNode => {
   };
 
   return (
-    <div className="*:my-4 *:first:mt-0 *:last:mb-0">
+    <div className="flex flex-col gap-4">
       <h1 className="text-2xl text-zinc-100 font-medium">
         Chinese English Dictionary
       </h1>
@@ -103,7 +103,7 @@ const App = (): ReactNode => {
         definitions={definitions}
       />
 
-      <div className="sticky bottom-8">
+      <div className="flex flex-col sticky bottom-8 gap-1">
         {/* Segment Suggestions */}
         <SegmentSuggestions
           isDisplayed={segments.length > 0}

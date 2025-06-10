@@ -9,10 +9,7 @@ const SegmentSuggestions = (props: {
   if (!isDisplayed) return;
 
   return (
-    <div
-      className="mb-4 *:mx-1 *:first:ml-0 *:last:mr-0 
-        flex flex-nowrap overflow-x-auto text-nowrap"
-    >
+    <div className="flex flex-nowrap gap-1 overflow-x-auto text-nowrap">
       {segments.map((segment, index) => {
         return (
           <button
