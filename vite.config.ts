@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+
 import { viteStaticCopy } from "vite-plugin-static-copy";
 import tailwindcss from "@tailwindcss/vite";
 
@@ -12,6 +13,10 @@ export default defineConfig({
         {
           src: "public/manifest.json",
           dest: ".",
+        },
+        {
+          src: "node_modules/jieba-wasm/pkg/web/jieba_rs_wasm_bg.wasm",
+          dest: "/node_modules/.vite/deps",
         },
       ],
     }),
@@ -26,7 +31,7 @@ export default defineConfig({
   },
   esbuild: {
     supported: {
-      "top-level-await": true, // Browsers can handle top-level-await features
+      "top-level-await": true, // Targets modern browsers that can handle top-level-await features
     },
   },
 });

@@ -10,7 +10,12 @@ import {
 import DefinitionDeck, { TermDefinition } from "./components/DefinitionDeck";
 
 // Chinese phrase segmenter
+// Vite is finicky with wasm, so they have to loaded as static assets from the public folder
+// Wasm is found from the npm package "jieba-wasm"
 import init, { cut } from "jieba-wasm";
+init().then(() => {
+  console.log(cut("中华人民共和国武汉市长江大桥", true));
+});
 
 // Imports dictionary entries for Chinese characters and phrases and mappings
 // for traditional and simplified characters
@@ -49,8 +54,6 @@ const getDictEntry = (term: string): TermDefinition[] | null => {
 };
 
 const App = (): ReactNode => {
-  init().then(() => console.log(cut("中华人民共和国武汉市长江大桥")));
-
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [searchDefinitions, setSearchDefinitions] = useState<TermDefinition[]>(
     []
@@ -75,7 +78,7 @@ const App = (): ReactNode => {
 
   return (
     <div className="*:my-4 *:first:mt-0 *:last:mb-0">
-      <h1 className="text-3xl text-zinc-100 font-medium">
+      <h1 className="text-2xl text-zinc-100 font-medium">
         Chinese English Dictionary
       </h1>
 
@@ -95,7 +98,7 @@ const App = (): ReactNode => {
         id="search-input"
         className="animate-appear flex flex-col sm:flex-row sticky bottom-8 gap-4"
       >
-        <div className="*:px-4 *:py-3 *:bg-zinc-950 flex flex-1">
+        <div className="*:px-4 *:py-4 *:bg-zinc-950 flex flex-1">
           <input
             id="character-input"
             className="flex-1 bg-zinc-950 text-zinc-100 rounded-l-lg
@@ -118,7 +121,7 @@ const App = (): ReactNode => {
         </div>
 
         <button
-          className="px-4 py-3 flex items-center rounded-lg
+          className="px-4 py-4 flex items-center rounded-lg
             bg-rose-500 text-zinc-100 font-medium cursor-pointer 
             transition-color duration-300 hover:bg-rose-400 active:bg-rose-600"
           onClick={() => enterSearchTerm()}
