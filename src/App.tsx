@@ -72,7 +72,8 @@ const App = (): ReactNode => {
     if (entry) {
       setDefinitions([...entry]);
     } else {
-      setSegments(cut(term, true).filter((segment) => segment in charMappings));
+      const segments = cut(term, true).filter((segment) => segment in charMappings);
+      segments.length > 0 && setSegments(segments);
     }
   };
 
