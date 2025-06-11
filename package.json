@@ -28,6 +28,7 @@
     "eslint-plugin-react-refresh": "^0.4.7",
     "typescript": "^5.2.2",
     "vite": "^6.3.5",
-    "vite-plugin-static-copy": "^3.0.0"
+    "vite-plugin-static-copy": "^3.0.0",
+    "vite-plugin-wasm": "^3.4.1"
   }
 }

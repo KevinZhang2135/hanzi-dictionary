@@ -7,11 +7,12 @@ import {
   MagnifyingGlassIcon,
   ViewfinderCircleIcon,
 } from "@heroicons/react/24/outline";
+
 import DefinitionDeck, { TermDefinition } from "./components/DefinitionDeck";
+import SegmentSuggestions from "./components/SegmentSuggestions";
 
 // Chinese phrase segmenter
 import init, { cut } from "jieba-wasm";
-import SegmentSuggestions from "./components/SegmentSuggestions";
 await init();
 
 // Imports dictionary entries for Chinese characters and phrases and mappings
