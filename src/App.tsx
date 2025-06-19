@@ -1,36 +1,36 @@
 // Styling
-import "./App.css";
+import './App.css';
 
 // React and component
-import { ReactNode, useState } from "react";
+import { ReactNode, useState } from 'react';
 import {
   MagnifyingGlassIcon,
   ViewfinderCircleIcon,
-} from "@heroicons/react/24/outline";
+} from '@heroicons/react/24/outline';
 
-import DefinitionDeck, { TermDefinition } from "./components/DefinitionDeck";
-import SegmentSuggestions from "./components/SegmentSuggestions";
+import DefinitionDeck, { TermDefinition } from './components/DefinitionDeck';
+import SegmentSuggestions from './components/SegmentSuggestions';
 
 // Chinese phrase segmenter
-import init, { cut } from "jieba-wasm";
+import init, { cut } from 'jieba-wasm';
 await init();
 
 // Imports dictionary entries for Chinese characters and phrases and mappings
 // for traditional and simplified characters
 const dictEntries = await (
-  await fetch("cedict-ts.json", {
+  await fetch('cedict-ts.json', {
     headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
     },
   })
 ).json();
 
 const charMappings = await (
-  await fetch("char-mappings.json", {
+  await fetch('char-mappings.json', {
     headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
     },
   })
 ).json();
@@ -52,7 +52,7 @@ const getDictEntry = (term: string): TermDefinition[] | null => {
 };
 
 const App = (): ReactNode => {
-  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState<string>('');
   const [segments, setSegments] = useState<string[]>([]);
 
   const [definitions, setDefinitions] = useState<TermDefinition[]>([]);
@@ -68,12 +68,18 @@ const App = (): ReactNode => {
     if (!term) return;
 
     const entry = getDictEntry(term);
-    setSearchTerm("");
+    setSearchTerm('');
 
     if (entry) {
       setDefinitions([...entry]);
     } else {
-      const segments = cut(term, true).filter((segment) => segment in charMappings);
+      // Attempts to segment the term into smaller sub-terms. If none found,
+      // each character is treated as a segment
+      let segments = cut(term).filter((segment) => segment in charMappings);
+      if (segments.length === 0) {
+        segments = term.split('').filter((segment) => segment in charMappings);
+      }
+
       segments.length > 0 && setSegments(segments);
     }
   };
@@ -84,7 +90,7 @@ const App = (): ReactNode => {
    * @param {React.KeyboardEvent<HTMLInputElement>} e Browser event
    */
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    e.key === "Enter" && enterSearchTerm(searchTerm);
+    e.key === 'Enter' && enterSearchTerm(searchTerm);
   };
 
   return (

@@ -3,6 +3,9 @@
 
 import json
 from parse import parse
+from pinyin_tone_converter.pinyin_tone_converter import PinyinToneConverter
+
+pinyin_converter = PinyinToneConverter().convert_text
 
 # Assumes the parser is run from the src directory
 INPUT_CEDICT_PATH = '../public/cedict_ts.u8'
@@ -29,7 +32,7 @@ def parse_line(line: str) -> dict:
 
     keys = ['traditional', 'simplified', 'pinyin', 'glossary']
     phrase = {key: value for (key, value) in zip(keys, parsed_line)}
-    phrase['pinyin'] = phrase['pinyin'].lower()
+    phrase['pinyin'] = pinyin_converter(phrase['pinyin'].lower())
 
     return phrase
 
