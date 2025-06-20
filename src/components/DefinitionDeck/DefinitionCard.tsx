@@ -10,7 +10,8 @@ const DefinitionCard = (props: { definition: TermDefinition }): ReactNode => {
   return (
     <div
       className="px-4 py-3 block bg-zinc-800 rounded-lg
-        transition ease-in-out hover:scale-105 hover:bg-zinc-700 duration-300 delay-100
+        transition ease-in-out duration-300 delay-100
+        hover:scale-105 hover:bg-zinc-700 
         *:my-1 *:first:mt-0 *:last:mb-0"
     >
       <h2 className="text-2xl text-zinc-100 font-normal">

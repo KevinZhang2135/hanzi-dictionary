@@ -89,16 +89,16 @@ const App = (): ReactNode => {
    * enter key
    * @param {React.KeyboardEvent<HTMLInputElement>} e Browser event
    */
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleEnterKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
     e.key === 'Enter' && enterSearchTerm(searchTerm);
   };
+
 
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-2xl text-zinc-100 font-medium">
         Chinese English Dictionary
       </h1>
-
       <p className="text-zinc-200">
         Dictionary that looks up Pinyin and English definition of Chinese
         characters and phrases.
@@ -110,7 +110,7 @@ const App = (): ReactNode => {
         definitions={definitions}
       />
 
-      <div className="flex flex-col sticky bottom-8 gap-1">
+      <div className="flex flex-col sticky bottom-8 gap-2">
         {/* Segment Suggestions */}
         <SegmentSuggestions
           isDisplayed={segments.length > 0}
@@ -124,31 +124,31 @@ const App = (): ReactNode => {
           className="animate-appear flex flex-col sm:flex-row gap-2"
           onSubmit={(e) => e.preventDefault()}
         >
-          <div className="*:px-4 *:py-3 *:bg-zinc-950 flex flex-1">
+          <div className="rounded-lg bg-zinc-950 flex flex-1">
             <input
               id="character-input"
-              className=" flex-1 bg-zinc-950 text-zinc-100 rounded-l-lg
+              className="px-4 py-3 flex-1 text-zinc-100
                 placeholder:text-zinc-300 placeholder:italic"
               type="text"
               value={searchTerm}
               placeholder="Enter a Chinese character or phrase"
               autoComplete="off"
               onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyDown={(e) => handleKeyDown(e)}
+              onKeyDown={(e) => handleEnterKey(e)}
             />
 
             <button
-              className="rounded-r-lg cursor-pointer
-            transition-color duration-300 hover:text-rose-500"
-              type="submit"
+              className="px-4 py-3 cursor-pointer
+                transition-color duration-300 hover:text-rose-500"
+              type="button"
             >
               <ViewfinderCircleIcon className="stroke-1 size-6" />
             </button>
           </div>
 
           <button
-            className="px-4 py-3 flex items-center rounded-lg
-            bg-rose-500 text-zinc-100 font-medium cursor-pointer 
+            className="px-4 py-3 flex items-center 
+            bg-rose-500 rounded-lg text-zinc-100 font-medium cursor-pointer 
             transition-color duration-300 hover:bg-rose-400 active:bg-rose-600"
             onClick={() => enterSearchTerm(searchTerm)}
           >
