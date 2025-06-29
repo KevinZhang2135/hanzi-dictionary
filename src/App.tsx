@@ -5,7 +5,7 @@ import './App.css';
 import { ReactNode, useState } from 'react';
 import {
   MagnifyingGlassIcon,
-  ViewfinderCircleIcon,
+  ClipboardIcon,
 } from '@heroicons/react/24/outline';
 
 import DefinitionDeck, { TermDefinition } from './components/DefinitionDeck';
@@ -93,6 +93,11 @@ const App = (): ReactNode => {
     e.key === 'Enter' && enterSearchTerm(searchTerm);
   };
 
+  const handleClipboardPaste = async () => {
+    const clipboard = await navigator.clipboard.read();
+    console.log(clipboard);
+  }
+
 
   return (
     <div className="flex flex-col gap-4">
@@ -126,6 +131,7 @@ const App = (): ReactNode => {
         >
           <div className="rounded-lg bg-zinc-950 flex flex-1">
             <input
+              autoFocus
               id="character-input"
               className="px-4 py-3 flex-1 text-zinc-100
                 placeholder:text-zinc-300 placeholder:italic"
@@ -141,15 +147,16 @@ const App = (): ReactNode => {
               className="px-4 py-3 cursor-pointer
                 transition-color duration-300 hover:text-rose-500"
               type="button"
+              onClick={handleClipboardPaste}
             >
-              <ViewfinderCircleIcon className="stroke-1 size-6" />
+              <ClipboardIcon className="stroke-1 size-6" />
             </button>
           </div>
 
           <button
-            className="px-4 py-3 flex items-center 
-            bg-rose-500 rounded-lg text-zinc-100 font-medium cursor-pointer 
-            transition-color duration-300 hover:bg-rose-400 active:bg-rose-600"
+            className="px-4 py-3 flex items-center
+            bg-rose-600 rounded-lg text-zinc-100 font-medium cursor-pointer 
+            transition-color duration-300 hover:bg-rose-500 active:bg-rose-600"
             onClick={() => enterSearchTerm(searchTerm)}
           >
             <MagnifyingGlassIcon className="size-5 mr-2" />

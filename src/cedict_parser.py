@@ -14,7 +14,7 @@ OUTPUT_MAPPINGS_PATH = '../public/char-mappings.json'
 OUTPUT_DICTIONARY_PATH = '../public/cedict-ts.json'
 
 
-def parse_line(line: str) -> dict:
+def parse_line(line: str) -> dict[str, str|list[str]]:
     """Converts a line from the CEDICT into a dictionary along its delimiters.
         The basic format of each line is specified by CEDICT documentation as:
         "traditional simplified [pin1 yin1] /gloss; gloss; .../gloss; gloss; .../"
@@ -40,8 +40,8 @@ def parse_line(line: str) -> dict:
 if __name__ == '__main__':
     # Index mappings for simplified and traditional characters onto the same
     # dictionary entry
-    char_mapping = {}
-    dict_entries = []
+    char_mapping: dict[str, set[int]] = {}
+    dict_entries: list[dict[str, str|list[str]]] = []
 
     # Open CEDICT file
     with open(INPUT_CEDICT_PATH, encoding='utf8') as cedict:
