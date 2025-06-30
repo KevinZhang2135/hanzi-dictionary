@@ -1,36 +1,40 @@
 // Styling
-import "./App.css";
+import './App.css';
 
 // React and component
-import { ReactNode, useState } from "react";
+import { ReactNode, useState } from 'react';
 import {
   MagnifyingGlassIcon,
   ClipboardIcon,
-} from "@heroicons/react/24/outline";
+} from '@heroicons/react/24/outline';
 
-import DefinitionDeck, { TermDefinition } from "./components/DefinitionDeck";
-import SegmentSuggestions from "./components/SegmentSuggestions";
+import DefinitionDeck, { TermDefinition } from './components/DefinitionDeck';
+import SegmentSuggestions from './components/SegmentSuggestions';
 
 // Chinese phrase segmenter
-import init, { cut } from "jieba-wasm";
+import init, { cut } from 'jieba-wasm';
 await init();
+
+// Tesseract OCR
+import { createWorker } from 'tesseract.js';
+const worker = await createWorker('chi_sim');
 
 // Imports dictionary entries for Chinese characters and phrases and mappings
 // for traditional and simplified characters
 const dictEntries = await (
-  await fetch("cedict-ts.json", {
+  await fetch('cedict-ts.json', {
     headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
     },
   })
 ).json();
 
 const charMappings = await (
-  await fetch("char-mappings.json", {
+  await fetch('char-mappings.json', {
     headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
     },
   })
 ).json();
@@ -52,7 +56,7 @@ const getDictEntry = (term: string): TermDefinition[] | null => {
 };
 
 const App = (): ReactNode => {
-  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState<string>('');
   const [segments, setSegments] = useState<string[]>([]);
 
   const [definitions, setDefinitions] = useState<TermDefinition[]>([]);
@@ -68,16 +72,18 @@ const App = (): ReactNode => {
     if (!term) return;
 
     const entry = getDictEntry(term);
-    setSearchTerm("");
+    setSearchTerm('');
 
     if (entry) {
       setDefinitions([...entry]);
-    } else {
-      // Attempts to segment the term into smaller sub-terms. If none found,
-      // each character is treated as a segment
+    }
+
+    // Attempts to segment the term into smaller sub-terms. If none found,
+    // each character is treated as a segment
+    else {
       let segments = cut(term).filter((segment) => segment in charMappings);
       if (segments.length === 0) {
-        segments = term.split("").filter((segment) => segment in charMappings);
+        segments = term.split('').filter((segment) => segment in charMappings);
       }
 
       segments.length > 0 && setSegments(segments);
@@ -90,7 +96,7 @@ const App = (): ReactNode => {
    * @param {React.KeyboardEvent<HTMLInputElement>} e Browser event
    */
   const handleEnterKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    e.key === "Enter" && enterSearchTerm(searchTerm);
+    e.key === 'Enter' && enterSearchTerm(searchTerm);
   };
 
   /**
@@ -109,10 +115,33 @@ const App = (): ReactNode => {
     });
   };
 
+  /**
+   * Handles pasting from the clipboard. If text is found, it is used as the
+   * search term. If an image is found, it is processed using Tesseract OCR to
+   * extract text before being used as the search term.
+   */
   const handleClipboardPaste = async () => {
     const clipboard = (await navigator.clipboard.read())[0];
-    const imageBlob = await clipboard.getType("image/png");
-    const image64 = blobToBase64(imageBlob);
+    console.log(clipboard.types);
+
+    // Retrieve image from clipboard
+    if (clipboard.types.includes('image/png')) {
+      const imageBlob = await clipboard.getType('image/png');
+      const image64 = await blobToBase64(imageBlob);
+
+      // Recognize text from image using Tesseract OCR and search for it
+      await worker
+        .recognize(image64)
+        .then((ret) => ret.data.text && setSearchTerm(ret.data.text));
+    }
+
+    // Retrieve text from clipboard
+    else if (clipboard.types.includes('text/plain')) {
+      const textBlob = await clipboard.getType('text/plain');
+      const text = await textBlob.text();
+
+      text && setSearchTerm(text);
+    }
   };
 
   return (
@@ -120,10 +149,19 @@ const App = (): ReactNode => {
       <h1 className="text-2xl text-zinc-100 font-medium">
         Chinese English Dictionary
       </h1>
-      <p className="text-zinc-200">
-        Dictionary that looks up Pinyin and English definition of Chinese
-        characters and phrases.
-      </p>
+      {definitions.length === 0 && (
+        <div className="flex flex-col gap-2 text-zinc-200">
+          <p>
+            Input any Chinese character or phrase in the search bar to look up
+            its Pinyin and English definition. Text as well as images on the
+            clipboard can be searched via the clipboard icon.
+          </p>
+          <p>
+            If the phrase is not found, it will be spliced into its constituent
+            segments as suggestions.
+          </p>
+        </div>
+      )}
 
       {/* Search History and Definitions */}
       <DefinitionDeck
