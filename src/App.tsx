@@ -66,6 +66,7 @@ const App = (): ReactNode => {
    * @param {string} term The phrase to look up
    */
   const enterSearchTerm = (term: string) => {
+    term = term.replaceAll(/\s/g, ''); // Remove all whitespace
     if (!term) return;
 
     const entry = getDictEntry(term);
@@ -132,7 +133,7 @@ const App = (): ReactNode => {
         .then(
           (ret) => {
             const text = ret.data.text;
-            text && setSearchTerm(text.replaceAll(' ', ''))
+            text && setSearchTerm(text.replaceAll(/\s/g, ''))
           }
         );
     }
