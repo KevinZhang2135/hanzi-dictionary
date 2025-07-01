@@ -1,6 +1,3 @@
-// Styling
-import './App.css';
-
 // React and component
 import { ReactNode, useState } from 'react';
 import {
@@ -122,25 +119,32 @@ const App = (): ReactNode => {
    */
   const handleClipboardPaste = async () => {
     const clipboard = (await navigator.clipboard.read())[0];
-    console.log(clipboard.types);
 
     // Retrieve image from clipboard
     if (clipboard.types.includes('image/png')) {
-      const imageBlob = await clipboard.getType('image/png');
-      const image64 = await blobToBase64(imageBlob);
+      const image64 = await clipboard
+        .getType('image/png')
+        .then((imageBlob) => blobToBase64(imageBlob));
 
       // Recognize text from image using Tesseract OCR and search for it
-      await worker
+      worker
         .recognize(image64)
-        .then((ret) => ret.data.text && setSearchTerm(ret.data.text));
+        .then(
+          (ret) => {
+            const text = ret.data.text;
+            text && setSearchTerm(text.replaceAll(' ', ''))
+          }
+        );
     }
 
     // Retrieve text from clipboard
     else if (clipboard.types.includes('text/plain')) {
-      const textBlob = await clipboard.getType('text/plain');
-      const text = await textBlob.text();
-
-      text && setSearchTerm(text);
+      clipboard
+        .getType('text/plain')
+        .then((textBlob) => textBlob.text())
+        .then((text) => {
+          text && setSearchTerm(searchTerm + text);
+        });
     }
   };
 
