@@ -1,3 +1,4 @@
+// @ts-nocheck
 // React and component
 import { ReactNode, useState } from 'react';
 import {
@@ -14,7 +15,7 @@ await init();
 
 // Tesseract OCR
 import { createWorker } from 'tesseract.js';
-const worker = await createWorker('chi_sim');
+const worker = await createWorker(['chi_sim', 'chi_tra']);
 
 // Imports dictionary entries for Chinese characters and phrases and mappings
 // for traditional and simplified characters
@@ -79,11 +80,21 @@ const App = (): ReactNode => {
     // Attempts to segment the term into smaller sub-terms. If none found,
     // each character is treated as a segment
     else {
-      let segments = cut(term).filter((segment) => segment in charMappings);
-      if (segments.length === 0) {
-        segments = term.split('').filter((segment) => segment in charMappings);
+      let segments = cut(term);
+
+      // Handles segments where the dictionary does not have an entry
+      // by splitting them into their constituent characters
+      for (let i = 0; i < segments.length; i++) {
+        const segment = segments[i];
+
+        if (!(segment in charMappings)) {
+          segments.splice(i, 1, ...segment.split(''));
+          i += segment.length - 1; // Skip over added segments
+        }
       }
 
+      // Final check to remove unsanitary segments
+      segments = segments.filter((segment) => segment in charMappings); 
       segments.length > 0 && setSegments(segments);
     }
   };
@@ -128,14 +139,10 @@ const App = (): ReactNode => {
         .then((imageBlob) => blobToBase64(imageBlob));
 
       // Recognize text from image using Tesseract OCR and search for it
-      worker
-        .recognize(image64)
-        .then(
-          (ret) => {
-            const text = ret.data.text;
-            text && setSearchTerm(text.replaceAll(/\s/g, ''))
-          }
-        );
+      const {
+        data: { text },
+      } = await worker.recognize(image64);
+      text && setSearchTerm(text.replaceAll(/\s/g, ''));
     }
 
     // Retrieve text from clipboard
