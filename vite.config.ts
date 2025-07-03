@@ -19,7 +19,15 @@ export default defineConfig({
         },
         {
           src: "node_modules/jieba-wasm/pkg/web/jieba_rs_wasm_bg.wasm",
-          dest: "node_modules/.vite/deps",
+          dest: "node_modules/.vite/deps/jieba-wasm/pkg/web",
+        },
+        {
+          src: "node_modules/tesseract.js/dist/worker.min.js",
+          dest: "node_modules/.vite/deps/tesseract.js/dist",
+        },
+        {
+          src: "node_modules/tesseract.js-core/*",
+          dest: "node_modules/.vite/deps/tesseract.js-core",
         },
       ],
     }),

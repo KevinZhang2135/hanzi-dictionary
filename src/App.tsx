@@ -1,4 +1,3 @@
-// @ts-nocheck
 // React and component
 import { ReactNode, useState } from 'react';
 import {
@@ -18,8 +17,9 @@ import { createWorker } from 'tesseract.js';
 const worker = await createWorker(['chi_sim', 'chi_tra']
   , 1, {
   workerPath: 'node_modules/tesseract.js/dist/worker.min.js',
-  langPath: 'src/trained-data',
+  langPath: 'trained-data',
   corePath: 'node_modules/tesseract.js-core',
+  workerBlobURL: false
 });
 
 // Imports dictionary entries for Chinese characters and phrases and mappings
