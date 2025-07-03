@@ -15,7 +15,12 @@ await init();
 
 // Tesseract OCR
 import { createWorker } from 'tesseract.js';
-const worker = await createWorker(['chi_sim', 'chi_tra']);
+const worker = await createWorker(['chi_sim', 'chi_tra']
+  , 1, {
+  workerPath: 'node_modules/tesseract.js/dist/worker.min.js',
+  langPath: 'src/trained-data',
+  corePath: 'node_modules/tesseract.js-core',
+});
 
 // Imports dictionary entries for Chinese characters and phrases and mappings
 // for traditional and simplified characters
@@ -94,7 +99,7 @@ const App = (): ReactNode => {
       }
 
       // Final check to remove unsanitary segments
-      segments = segments.filter((segment) => segment in charMappings); 
+      segments = segments.filter((segment) => segment in charMappings);
       segments.length > 0 && setSegments(segments);
     }
   };
