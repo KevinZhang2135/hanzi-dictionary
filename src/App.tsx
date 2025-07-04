@@ -14,33 +14,19 @@ await init();
 
 // Tesseract OCR
 import { createWorker } from 'tesseract.js';
-const worker = await createWorker(['chi_sim', 'chi_tra']
-  , 1, {
+const worker = await createWorker(['chi_sim', 'chi_tra'], 1, {
   workerPath: 'node_modules/tesseract.js/dist/worker.min.js',
-  langPath: 'trained-data',
+  langPath: 'src/trained-data',
   corePath: 'node_modules/tesseract.js-core',
-  workerBlobURL: false
+  workerBlobURL: false,
 });
 
 // Imports dictionary entries for Chinese characters and phrases and mappings
 // for traditional and simplified characters
-const dictEntries = await (
-  await fetch('cedict-ts.json', {
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
-  })
-).json();
-
-const charMappings = await (
-  await fetch('char-mappings.json', {
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
-  })
-).json();
+const dictEntries = await fetch('cedict-ts.json').then((res) => res.json());
+const charMappings = await fetch('char-mappings.json').then((res) =>
+  res.json()
+);
 
 /**
  * Retrieves the dictionary entry for a specified term.
