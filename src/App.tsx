@@ -19,6 +19,7 @@ const worker = await createWorker(['chi_sim', 'chi_tra'], 1, {
   langPath: 'src/trained-data',
   corePath: 'node_modules/tesseract.js-core',
   workerBlobURL: false,
+  logger: m => console.log(m),
 });
 
 // Imports dictionary entries for Chinese characters and phrases and mappings
