@@ -34,5 +34,5 @@ export default defineConfig({
       "top-level-await": true, // Targets modern browsers that can handle top-level-await features
     },
   },
-  base: "/hanzi-dict/"
+  base: "/hanzi-dictionary/"
 });
