@@ -17,5 +17,5 @@ check their definitions.
 
 - CEDICT Dictionary lookup
 - Jieba Chinese word segmentation (“结巴”中文分词) web assembly 
-- (planned) Tesseract OCR detection 
+- Tesseract OCR detection 
 
