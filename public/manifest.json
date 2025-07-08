@@ -19,5 +19,11 @@
   },
   "permissions": [
     "clipboardRead"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["scripts/*", "languages/*"],
+      "matches": ["<all_urls>"]
+    }
   ]
 }

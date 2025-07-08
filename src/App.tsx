@@ -1,31 +1,35 @@
+// @ts-nocheck
 // React and component
-import { ReactNode, useState } from 'react';
+import { ReactNode, useState } from "react";
 import {
   MagnifyingGlassIcon,
   ClipboardIcon,
-} from '@heroicons/react/24/outline';
+} from "@heroicons/react/24/outline";
 
-import DefinitionDeck, { TermDefinition } from './components/DefinitionDeck';
-import SegmentSuggestions from './components/SegmentSuggestions';
+import DefinitionDeck, { TermDefinition } from "./components/DefinitionDeck";
+import SegmentSuggestions from "./components/SegmentSuggestions";
 
 // Chinese phrase segmenter
-import init, { cut } from 'jieba-wasm';
+import init, { cut } from "jieba-wasm";
 await init();
 
 // Tesseract OCR
-import { createWorker } from 'tesseract.js';
-const worker = await createWorker(['chi_sim', 'chi_tra'], 1, {
-  workerPath: 'node_modules/tesseract.js/dist/worker.min.js',
-  langPath: 'src/trained-data',
-  corePath: 'node_modules/tesseract.js-core',
+import { createWorker } from "tesseract.js";
+import workerPath from "tesseract.js/dist/worker.min.js?url";
+
+// Will result in reduced performance, but works for Chrome Extensions
+import corePath from "tesseract.js-core/tesseract-core.wasm.js?url"; 
+const worker = await createWorker(["chi_sim", "chi_tra"], 1, {
+  workerPath,
+  langPath: "trained-data",
+  corePath,
   workerBlobURL: false,
-  logger: m => console.log(m),
 });
 
 // Imports dictionary entries for Chinese characters and phrases and mappings
 // for traditional and simplified characters
-const dictEntries = await fetch('cedict-ts.json').then((res) => res.json());
-const charMappings = await fetch('char-mappings.json').then((res) =>
+const dictEntries = await fetch("cedict-ts.json").then((res) => res.json());
+const charMappings = await fetch("char-mappings.json").then((res) =>
   res.json()
 );
 
@@ -46,7 +50,7 @@ const getDictEntry = (term: string): TermDefinition[] | null => {
 };
 
 const App = (): ReactNode => {
-  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const [segments, setSegments] = useState<string[]>([]);
 
   const [definitions, setDefinitions] = useState<TermDefinition[]>([]);
@@ -59,11 +63,11 @@ const App = (): ReactNode => {
    * @param {string} term The phrase to look up
    */
   const enterSearchTerm = (term: string) => {
-    term = term.replaceAll(/\s/g, ''); // Remove all whitespace
+    term = term.replaceAll(/\s/g, ""); // Remove all whitespace
     if (!term) return;
 
     const entry = getDictEntry(term);
-    setSearchTerm('');
+    setSearchTerm("");
 
     if (entry) {
       setDefinitions([...entry]);
@@ -80,7 +84,7 @@ const App = (): ReactNode => {
         const segment = segments[i];
 
         if (!(segment in charMappings)) {
-          segments.splice(i, 1, ...segment.split(''));
+          segments.splice(i, 1, ...segment.split(""));
           i += segment.length - 1; // Skip over added segments
         }
       }
@@ -97,7 +101,7 @@ const App = (): ReactNode => {
    * @param {React.KeyboardEvent<HTMLInputElement>} e Browser event
    */
   const handleEnterKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    e.key === 'Enter' && enterSearchTerm(searchTerm);
+    e.key === "Enter" && enterSearchTerm(searchTerm);
   };
 
   /**
@@ -125,22 +129,22 @@ const App = (): ReactNode => {
     const clipboard = (await navigator.clipboard.read())[0];
 
     // Retrieve image from clipboard
-    if (clipboard.types.includes('image/png')) {
+    if (clipboard.types.includes("image/png")) {
       const image64 = await clipboard
-        .getType('image/png')
+        .getType("image/png")
         .then((imageBlob) => blobToBase64(imageBlob));
 
       // Recognize text from image using Tesseract OCR and search for it
       const {
         data: { text },
       } = await worker.recognize(image64);
-      text && setSearchTerm(text.replaceAll(/\s/g, ''));
+      text && setSearchTerm(text.replaceAll(/\s/g, ""));
     }
 
     // Retrieve text from clipboard
-    else if (clipboard.types.includes('text/plain')) {
+    else if (clipboard.types.includes("text/plain")) {
       clipboard
-        .getType('text/plain')
+        .getType("text/plain")
         .then((textBlob) => textBlob.text())
         .then((text) => {
           text && setSearchTerm(searchTerm + text);

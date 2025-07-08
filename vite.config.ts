@@ -18,16 +18,8 @@ export default defineConfig({
           src: "node_modules/jieba-wasm/pkg/web/jieba_rs_wasm_bg.wasm",
           dest: "node_modules/.vite/deps",
         },
-        // {
-        //   src: "node_modules/tesseract.js/dist/worker.min.js",
-        //   dest: "node_modules/.vite/deps",
-        // },
-        // {
-        //   src: "node_modules/tesseract.js-core/*.wasm.js",
-        //   dest: "node_modules/.vite/deps",
-        // },
-      ]
-    })
+      ],
+    }),
   ],
   build: {
     outDir: "build",
