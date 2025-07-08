@@ -1,7 +1,7 @@
 {
-  "name": "chrome-extension-react-template",
+  "name": "hanzi-dictionary",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "homepage": "https://kevinzhang2135.github.io/hanzi-dict/",
   "type": "module",
   "scripts": {
