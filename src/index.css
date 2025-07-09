@@ -16,6 +16,13 @@
       opacity: 1;
     }
   }
+
+  --animate-spin-fast: spin 1s cubic-bezier(0.75, 0.4, 0.25, 0.6) infinite;
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+}
 }
 
 :root {

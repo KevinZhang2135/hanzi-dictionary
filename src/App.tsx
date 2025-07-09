@@ -18,6 +18,7 @@ import workerPath from 'tesseract.js/dist/worker.min.js?url';
 
 // Will result in reduced performance, but works for Chrome Extensions
 import corePath from 'tesseract.js-core/tesseract-core.wasm.js?url';
+import Spinner from './components/Spinner';
 
 // Imports dictionary entries for Chinese characters and phrases and mappings
 // for traditional and simplified characters
@@ -48,6 +49,10 @@ const App = (): ReactNode => {
 
   const [definitions, setDefinitions] = useState<TermDefinition[]>([]);
 
+  const clipBoardIcon = <ClipboardIcon className="stroke-2 size-6" />;
+  const spinnerIcon = <Spinner className="stroke-4 size-6 text-zinc-100 rotate-60" />;
+
+  const [workerInProgress, setWorkerInProgress] = useState<boolean>(false);
   const [worker, setWorker] = useState<Tesseract.Worker | null>(null);
   useEffect(() => {
     createWorker(['chi_sim', 'chi_tra'], 1, {
@@ -55,7 +60,7 @@ const App = (): ReactNode => {
       langPath: 'trained-data',
       corePath,
       workerBlobURL: false,
-      cacheMethod: 'refresh'
+      cacheMethod: 'refresh',
     }).then(setWorker);
   }, []);
 
@@ -131,7 +136,6 @@ const App = (): ReactNode => {
    */
   const handleClipboardPaste = async () => {
     if (!worker) return;
-    
     const clipboard = (await navigator.clipboard.read())[0];
 
     // Retrieve image from clipboard
@@ -213,12 +217,16 @@ const App = (): ReactNode => {
 
             <button
               className="px-4 py-3 cursor-pointer
-                transition-color duration-300 hover:text-rose-500"
+                transition-color duration-300 hover:text-rose-500
+                disabled:text-zinc-400 disabled:cursor-progress"
               type="button"
-              disabled={worker === null}
-              onClick={handleClipboardPaste}
+              disabled={worker === null || workerInProgress}
+              onClick={() => {
+                setWorkerInProgress(true);
+                handleClipboardPaste().then(() => setWorkerInProgress(false));
+              }}
             >
-              <ClipboardIcon className="stroke-1 size-6" />
+              {workerInProgress ? spinnerIcon : clipBoardIcon}
             </button>
           </div>
 
@@ -228,7 +236,7 @@ const App = (): ReactNode => {
             transition-color duration-300 hover:bg-rose-500 active:bg-rose-600"
             onClick={() => enterSearchTerm(searchTerm)}
           >
-            <MagnifyingGlassIcon className="size-5 mr-2" />
+            <MagnifyingGlassIcon className="stroke-3 size-5 mr-2" />
             Search
           </button>
         </form>
