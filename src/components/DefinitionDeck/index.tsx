@@ -1,6 +1,6 @@
 // React and components
-import { ReactNode } from "react";
-import DefinitionCard from "./DefinitionCard";
+import { ReactNode } from 'react';
+import DefinitionCard from './DefinitionCard';
 
 // TS types
 interface TermDefinition {
@@ -16,7 +16,7 @@ const DefinitionDeck = (props: {
 }): ReactNode => {
   const { isDisplayed, definitions } = props;
   if (!isDisplayed) return;
-  
+
   return (
     <div className="flex flex-col gap-2">
       {definitions.map((element, index) => {

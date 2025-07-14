@@ -1,8 +1,8 @@
 // React and components
-import { ReactNode } from "react";
+import { ReactNode } from 'react';
 
 // TS types
-import { TermDefinition } from ".";
+import { TermDefinition } from '.';
 
 const DefinitionCard = (props: { definition: TermDefinition }): ReactNode => {
   const { definition } = props as { definition: TermDefinition };
@@ -15,13 +15,13 @@ const DefinitionCard = (props: { definition: TermDefinition }): ReactNode => {
         *:my-1 *:first:mt-0 *:last:mb-0"
     >
       <h2 className="text-2xl text-zinc-100 font-normal">
-        {definition.simplified} (<span className="text-xl">trad:</span>{" "}
+        {definition.simplified} (<span className="text-xl">trad:</span>{' '}
         {definition.traditional})
       </h2>
 
       <p className="text-zinc-200">Pinyin: {definition.pinyin}</p>
       <p className="text-zinc-200">
-        Definition: {definition.glossary.join("; ")}
+        Definition: {definition.glossary.join('; ')}
       </p>
     </div>
   );

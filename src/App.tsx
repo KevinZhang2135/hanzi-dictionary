@@ -50,7 +50,9 @@ const App = (): ReactNode => {
   const [definitions, setDefinitions] = useState<TermDefinition[]>([]);
 
   const clipBoardIcon = <ClipboardIcon className="stroke-2 size-6" />;
-  const spinnerIcon = <Spinner className="stroke-4 size-6 text-zinc-100 rotate-60" />;
+  const spinnerIcon = (
+    <Spinner className="stroke-4 size-6 text-zinc-100 rotate-60" />
+  );
 
   const [workerInProgress, setWorkerInProgress] = useState<boolean>(false);
   const [worker, setWorker] = useState<Tesseract.Worker | null>(null);
@@ -62,6 +64,10 @@ const App = (): ReactNode => {
       workerBlobURL: false,
       cacheMethod: 'refresh',
     }).then(setWorker);
+
+    return () => {
+      worker?.terminate();
+    };
   }, []);
 
   /**

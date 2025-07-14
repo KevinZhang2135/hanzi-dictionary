@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
   --color-midnight-600: #606060;
@@ -22,7 +22,7 @@
     to {
       transform: rotate(360deg);
     }
-}
+  }
 }
 
 :root {
@@ -44,5 +44,5 @@ body {
 }
 
 #root {
-    margin: 32px;
+  margin: 32px;
 }
