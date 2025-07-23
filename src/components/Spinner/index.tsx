@@ -1,8 +1,7 @@
 // React and components
 import { ReactNode } from 'react';
 
-const Spinner = (props: { className?: string }): ReactNode => {
-  const { className } = props as { className?: string };
+const Spinner = ({className}: { className?: string }): ReactNode => {
   return (
     <div className={className}>
       <svg className="animate-spin-fast" viewBox="0 0 24 24">

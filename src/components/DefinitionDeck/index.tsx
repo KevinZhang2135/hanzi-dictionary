@@ -10,13 +10,15 @@ interface TermDefinition {
   glossary: string[];
 }
 
-const DefinitionDeck = (props: {
+const DefinitionDeck = ({
+  isDisplayed,
+  definitions,
+}: {
   isDisplayed: boolean;
   definitions: TermDefinition[];
 }): ReactNode => {
-  const { isDisplayed, definitions } = props;
-  if (!isDisplayed) return;
 
+  if (!isDisplayed) return;
   return (
     <div className="flex flex-col gap-2">
       {definitions.map((element, index) => {

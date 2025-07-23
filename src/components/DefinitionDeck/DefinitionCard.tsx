@@ -4,9 +4,12 @@ import { ReactNode } from 'react';
 // TS types
 import { TermDefinition } from '.';
 
-const DefinitionCard = (props: { definition: TermDefinition }): ReactNode => {
-  const { definition } = props as { definition: TermDefinition };
-
+const DefinitionCard = ({
+  definition,
+}: {
+  definition: TermDefinition;
+}): ReactNode => {
+  
   return (
     <div
       className="px-4 py-3 block bg-zinc-800 rounded-lg
