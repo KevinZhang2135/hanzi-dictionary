@@ -28,13 +28,13 @@ const charMappings = await fetch('char-mappings.json').then((res) =>
 );
 
 /**
- * Retrieves the dictionary entry for a specified term.
+ * Retrieves the dictionary entries for a specified term.
  * @param {string} term The specified character or phrase to retrieve the
  *   dictionary entry for
- * @returns The dictionary entry object for the specified term, or null if the
+ * @returns A list of dictionary entry objects for the specified term, or null if the
  *   term does not exist
  */
-const getDictEntry = (term: string): TermDefinition[] | null => {
+const getDictEntries = (term: string): TermDefinition[] | null => {
   // Check if the term exists in the dictionary entries
   if (term in charMappings) {
     return charMappings[term].map((index: number) => dictEntries[index]);
@@ -81,17 +81,19 @@ const App = (): ReactNode => {
     term = term.replaceAll(/\s/g, ''); // Remove all whitespace
     if (!term) return;
 
-    const entry = getDictEntry(term);
+    let entries = getDictEntries(term);
     setSearchTerm('');
 
-    if (entry) {
-      setDefinitions([...entry]);
+    if (entries) {
+      setDefinitions(entries);
     }
 
     // Attempts to segment the term into smaller sub-terms. If none found,
     // each character is treated as a segment
     else {
       let segments = cut(term);
+      
+      // If segment has only one term, immediately use it as a regular entry
 
       // Handles segments where the dictionary does not have an entry
       // by splitting them into their constituent characters
@@ -106,7 +108,15 @@ const App = (): ReactNode => {
 
       // Final check to remove unsanitary segments
       segments = segments.filter((segment) => segment in charMappings);
-      segments.length > 0 && setSegments(segments);
+      if (segments.length === 1) {
+        // If the segment is isolated, treat it as if it was an usual single term
+        entries = getDictEntries(segments[0]);
+        entries && setDefinitions(entries);
+      } 
+      
+      else if (segments.length > 0) {
+        setSegments(segments);
+      }
     }
   };
 
