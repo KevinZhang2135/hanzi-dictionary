@@ -9,7 +9,6 @@ const DefinitionCard = ({
 }: {
   definition: TermDefinition;
 }): ReactNode => {
-  
   return (
     <div
       className="px-4 py-3 block bg-zinc-800 rounded-lg
@@ -17,13 +16,14 @@ const DefinitionCard = ({
         hover:scale-105 hover:bg-zinc-700 
         *:my-1 *:first:mt-0 *:last:mb-0"
     >
-      <h2 className="text-2xl text-zinc-100 font-normal">
-        {definition.simplified} (<span className="text-xl">trad:</span>{' '}
-        {definition.traditional})
+      <h2 className="text-xl md:text-2xl text-zinc-100">
+        {definition.simplified} ( trad: {definition.traditional} )
       </h2>
 
-      <p className="text-base text-zinc-200">Pinyin: {definition.pinyin}</p>
-      <p className="text-base text-zinc-200">
+      <p className="text-sm md:text-base text-zinc-200">
+        Pinyin: {definition.pinyin}
+      </p>
+      <p className="text-sm md:text-base text-zinc-200">
         Definition: {definition.glossary.join('; ')}
       </p>
     </div>

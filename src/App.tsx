@@ -92,7 +92,7 @@ const App = (): ReactNode => {
     // each character is treated as a segment
     else {
       let segments = cut(term);
-      
+
       // If segment has only one term, immediately use it as a regular entry
 
       // Handles segments where the dictionary does not have an entry
@@ -112,9 +112,7 @@ const App = (): ReactNode => {
         // If the segment is isolated, treat it as if it was an usual single term
         entries = getDictEntries(segments[0]);
         entries && setDefinitions(entries);
-      } 
-      
-      else if (segments.length > 0) {
+      } else if (segments.length > 0) {
         setSegments(segments);
       }
     }
@@ -179,12 +177,16 @@ const App = (): ReactNode => {
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      <h1 className="text-2xl text-zinc-100 font-medium">
+    <div
+      className="flex flex-col gap-4
+        transition-opacity duration-600
+        opacity-100 starting:opacity-0"
+    >
+      <h1 className="text-xl md:text-2xl text-zinc-100 font-medium">
         Chinese English Dictionary
       </h1>
       {definitions.length === 0 && (
-        <div className="flex flex-col gap-2 text-base text-zinc-200">
+        <div className="flex flex-col gap-2 text-sm md:text-base text-zinc-200">
           <p>
             Input any Chinese character or phrase in the search bar to look up
             its Pinyin and English definition. Text as well as images on the
@@ -214,14 +216,16 @@ const App = (): ReactNode => {
         {/* Search Input */}
         <form
           id="search-input"
-          className="animate-appear flex flex-col sm:flex-row gap-2"
+          className="animate-appear flex flex-col sm:flex-row gap-2
+            text-sm md:text-base text-zinc-100"
           onSubmit={(e) => e.preventDefault()}
         >
           <div className="rounded-lg bg-zinc-950 flex flex-1">
+            {/* Search Input Field */}
             <input
               autoFocus
               id="character-input"
-              className="px-4 py-3 flex-1 text-base text-zinc-100
+              className="min-w-30 px-4 py-3 flex-1 text-ellipsis
                 placeholder:text-zinc-300 placeholder:italic"
               type="text"
               value={searchTerm}
@@ -231,8 +235,9 @@ const App = (): ReactNode => {
               onKeyDown={(e) => handleEnterKey(e)}
             />
 
+            {/* Clipboard Paste Button */}
             <button
-              className="px-4 py-3 text-base cursor-pointer
+              className="px-4 py-3 cursor-pointer
                 transition-color duration-300 hover:text-rose-500
                 disabled:text-zinc-400 disabled:cursor-progress"
               type="button"
@@ -246,9 +251,10 @@ const App = (): ReactNode => {
             </button>
           </div>
 
+          {/* Search Button */}
           <button
             className="px-4 py-3 flex items-center bg-rose-600 rounded-lg
-              text-base text-zinc-100 font-medium cursor-pointer
+              font-medium cursor-pointer
               transition-color duration-300 hover:bg-rose-500 active:bg-rose-600"
             onClick={() => enterSearchTerm(searchTerm)}
           >
