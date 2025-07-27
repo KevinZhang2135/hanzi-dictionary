@@ -32,7 +32,12 @@ def parse_line(line: str) -> dict[str, str | list[str]]:
 
     keys = ['traditional', 'simplified', 'pinyin', 'glossary']
     phrase = {key: value for (key, value) in zip(keys, parsed_line)}
-    phrase['pinyin'] = pinyin_converter(phrase['pinyin'].lower())
+
+    # CEDICT uses 'u:' for 'v' for some reason
+    phrase['pinyin'] = phrase['pinyin'].replace('u:', 'v') 
+
+    # Converts pinyin with number tones to their utf-8 equivalents
+    phrase['pinyin'] = pinyin_converter(phrase['pinyin'].lower()) 
 
     return phrase
 

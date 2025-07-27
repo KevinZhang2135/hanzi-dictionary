@@ -184,7 +184,7 @@ const App = (): ReactNode => {
         Chinese English Dictionary
       </h1>
       {definitions.length === 0 && (
-        <div className="flex flex-col gap-2 text-zinc-200">
+        <div className="flex flex-col gap-2 text-base text-zinc-200">
           <p>
             Input any Chinese character or phrase in the search bar to look up
             its Pinyin and English definition. Text as well as images on the
@@ -221,7 +221,7 @@ const App = (): ReactNode => {
             <input
               autoFocus
               id="character-input"
-              className="px-4 py-3 flex-1 text-zinc-100
+              className="px-4 py-3 flex-1 text-base text-zinc-100
                 placeholder:text-zinc-300 placeholder:italic"
               type="text"
               value={searchTerm}
@@ -232,7 +232,7 @@ const App = (): ReactNode => {
             />
 
             <button
-              className="px-4 py-3 cursor-pointer
+              className="px-4 py-3 text-base cursor-pointer
                 transition-color duration-300 hover:text-rose-500
                 disabled:text-zinc-400 disabled:cursor-progress"
               type="button"
@@ -247,9 +247,9 @@ const App = (): ReactNode => {
           </div>
 
           <button
-            className="px-4 py-3 flex items-center
-            bg-rose-600 rounded-lg text-zinc-100 font-medium cursor-pointer 
-            transition-color duration-300 hover:bg-rose-500 active:bg-rose-600"
+            className="px-4 py-3 flex items-center bg-rose-600 rounded-lg
+              text-base text-zinc-100 font-medium cursor-pointer
+              transition-color duration-300 hover:bg-rose-500 active:bg-rose-600"
             onClick={() => enterSearchTerm(searchTerm)}
           >
             <MagnifyingGlassIcon className="stroke-3 size-5 mr-2" />

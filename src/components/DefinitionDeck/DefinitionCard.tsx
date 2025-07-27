@@ -22,8 +22,8 @@ const DefinitionCard = ({
         {definition.traditional})
       </h2>
 
-      <p className="text-zinc-200">Pinyin: {definition.pinyin}</p>
-      <p className="text-zinc-200">
+      <p className="text-base text-zinc-200">Pinyin: {definition.pinyin}</p>
+      <p className="text-base text-zinc-200">
         Definition: {definition.glossary.join('; ')}
       </p>
     </div>
