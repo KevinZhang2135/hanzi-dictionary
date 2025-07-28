@@ -177,11 +177,7 @@ const App = (): ReactNode => {
   };
 
   return (
-    <div
-      className="flex flex-col gap-4
-        transition-opacity duration-600
-        opacity-100 starting:opacity-0"
-    >
+    <div className="flex flex-col gap-4 animate-appear">
       <h1 className="text-xl md:text-2xl text-zinc-100 font-medium">
         Chinese English Dictionary
       </h1>
