@@ -1,29 +1,29 @@
 // React and component
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from "react";
 import {
   MagnifyingGlassIcon,
   ClipboardIcon,
-} from '@heroicons/react/24/outline';
+} from "@heroicons/react/24/outline";
 
-import DefinitionDeck, { TermDefinition } from './components/DefinitionDeck';
-import SegmentSuggestions from './components/SegmentSuggestions';
+import DefinitionDeck, { TermDefinition } from "./components/DefinitionDeck";
+import SegmentSuggestions from "./components/SegmentSuggestions";
+import Spinner from "./components/Spinner";
 
 // Chinese phrase segmenter
-import init, { cut } from 'jieba-wasm';
+import init, { cut } from "jieba-wasm";
 await init();
 
 // Tesseract OCR
-import { createWorker } from 'tesseract.js';
-import workerPath from 'tesseract.js/dist/worker.min.js?url';
+import { createWorker } from "tesseract.js";
+import workerPath from "tesseract.js/dist/worker.min.js?url";
 
-// Will result in reduced performance, but works for Chrome Extensions
-import corePath from 'tesseract.js-core/tesseract-core.wasm.js?url';
-import Spinner from './components/Spinner';
+// Will not work on all devices, but works for Chrome Extensions
+import corePath from "tesseract.js-core/tesseract-core-simd.wasm.js?url";
 
 // Imports dictionary entries for Chinese characters and phrases and mappings
 // for traditional and simplified characters
-const dictEntries = await fetch('cedict-ts.json').then((res) => res.json());
-const charMappings = await fetch('char-mappings.json').then((res) =>
+const dictEntries = await fetch("cedict-ts.json").then((res) => res.json());
+const charMappings = await fetch("char-mappings.json").then((res) =>
   res.json()
 );
 
@@ -44,7 +44,7 @@ const getDictEntries = (term: string): TermDefinition[] | null => {
 };
 
 const App = (): ReactNode => {
-  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const [segments, setSegments] = useState<string[]>([]);
 
   const [definitions, setDefinitions] = useState<TermDefinition[]>([]);
@@ -54,15 +54,18 @@ const App = (): ReactNode => {
     <Spinner className="stroke-4 size-6 text-zinc-100 rotate-60" />
   );
 
+  const [image64, setImage64] = useState<string>("");
+
   const [workerInProgress, setWorkerInProgress] = useState<boolean>(false);
   const [worker, setWorker] = useState<Tesseract.Worker | null>(null);
   useEffect(() => {
-    createWorker(['chi_sim', 'chi_tra'], 1, {
+    // Attempts to load SIMD core path
+    createWorker(["chi_sim", "chi_tra"], 1, {
       workerPath,
-      langPath: 'trained-data',
+      langPath: "trained-data",
       corePath,
       workerBlobURL: false,
-      cacheMethod: 'refresh',
+      cacheMethod: "refresh",
     }).then(setWorker);
 
     return () => {
@@ -78,11 +81,11 @@ const App = (): ReactNode => {
    * @param {string} term The phrase to look up
    */
   const enterSearchTerm = (term: string) => {
-    term = term.replaceAll(/\s/g, ''); // Remove all whitespace
+    term = term.replaceAll(/\s/g, ""); // Remove all whitespace
     if (!term) return;
 
     let entries = getDictEntries(term);
-    setSearchTerm('');
+    setSearchTerm("");
 
     if (entries) {
       setDefinitions(entries);
@@ -101,7 +104,7 @@ const App = (): ReactNode => {
         const segment = segments[i];
 
         if (!(segment in charMappings)) {
-          segments.splice(i, 1, ...segment.split(''));
+          segments.splice(i, 1, ...segment.split(""));
           i += segment.length - 1; // Skip over added segments
         }
       }
@@ -124,7 +127,7 @@ const App = (): ReactNode => {
    * @param {React.KeyboardEvent<HTMLInputElement>} e Browser event
    */
   const handleEnterKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    e.key === 'Enter' && enterSearchTerm(searchTerm);
+    e.key === "Enter" && enterSearchTerm(searchTerm);
   };
 
   /**
@@ -153,22 +156,24 @@ const App = (): ReactNode => {
     const clipboard = (await navigator.clipboard.read())[0];
 
     // Retrieve image from clipboard
-    if (clipboard.types.includes('image/png')) {
-      const image64 = await clipboard
-        .getType('image/png')
-        .then((imageBlob) => blobToBase64(imageBlob));
+    if (clipboard.types.includes("image/png")) {
+      const image64 = (await clipboard
+        .getType("image/png")
+        .then((imageBlob) => blobToBase64(imageBlob))) as string;
+
+      setImage64(image64);
 
       // Recognize text from image using Tesseract OCR and search for it
       const {
         data: { text },
       } = await worker.recognize(image64);
-      text && setSearchTerm(text.replaceAll(/\s/g, ''));
+      text && setSearchTerm(text.replaceAll(/\s/g, ""));
     }
 
     // Retrieve text from clipboard
-    else if (clipboard.types.includes('text/plain')) {
+    else if (clipboard.types.includes("text/plain")) {
       clipboard
-        .getType('text/plain')
+        .getType("text/plain")
         .then((textBlob) => textBlob.text())
         .then((text) => {
           text && setSearchTerm(searchTerm + text);
@@ -195,6 +200,16 @@ const App = (): ReactNode => {
         </div>
       )}
 
+      {image64 && (
+        <img
+          className="h-30 object-cover rounded-lg animate-appear
+            transition duration-300 delay-100 
+            hover:scale-105
+            hover:inset-shadow-sm hover:inset-shadow-indigo-500/50"
+          src={image64}
+        />
+      )}
+
       {/* Search History and Definitions */}
       <DefinitionDeck
         isDisplayed={definitions.length > 0}
@@ -212,8 +227,8 @@ const App = (): ReactNode => {
         {/* Search Input */}
         <form
           id="search-input"
-          className="animate-appear flex flex-col sm:flex-row gap-2
-            text-sm md:text-base text-zinc-100"
+          className="flex flex-col sm:flex-row gap-2 
+            text-sm md:text-base text-zinc-100 animate-appear"
           onSubmit={(e) => e.preventDefault()}
         >
           <div className="rounded-lg bg-zinc-950 flex flex-1">
