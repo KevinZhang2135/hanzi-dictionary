@@ -233,7 +233,7 @@ const App = (): ReactNode => {
             <input
               autoFocus
               id="character-input"
-              className="min-w-30 button flex-1 text-ellipsis
+              className="min-w-30 button flex-1 text-ellipsis cursor-text!
                 placeholder:text-zinc-300 placeholder:italic"
               type="text"
               value={searchTerm}
