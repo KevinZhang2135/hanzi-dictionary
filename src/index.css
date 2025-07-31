@@ -38,11 +38,21 @@
 }
 
 body {
-  margin: auto;
-  min-width: 300px;
-  max-width: 800px;
+  @apply m-auto min-w-75 max-w-200;
 }
 
 #root {
-  margin: 32px;
+  @apply p-8;
+}
+
+h1 {
+  @apply text-xl md:text-2xl font-medium
+}
+
+.button {
+  @apply px-4 py-3 flex items-center gap-2 rounded-lg cursor-pointer;
+}
+
+.body-text {
+  @apply text-sm md:text-base
 }

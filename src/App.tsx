@@ -54,8 +54,6 @@ const App = (): ReactNode => {
     <Spinner className="stroke-4 size-6 text-zinc-100 rotate-60" />
   );
 
-  const [image64, setImage64] = useState<string>("");
-
   const [workerInProgress, setWorkerInProgress] = useState<boolean>(false);
   const [worker, setWorker] = useState<Tesseract.Worker | null>(null);
   useEffect(() => {
@@ -82,42 +80,50 @@ const App = (): ReactNode => {
    */
   const enterSearchTerm = (term: string) => {
     term = term.replaceAll(/\s/g, ""); // Remove all whitespace
-    if (!term) return;
+    if (!term) return; // Empty search term
 
     let entries = getDictEntries(term);
     setSearchTerm("");
 
+    // Term is easily found in dictionary
     if (entries) {
       setDefinitions(entries);
+      return;
     }
+
+    // Otherwise, the term is not immediately in the dictionary.
 
     // Attempts to segment the term into smaller sub-terms. If none found,
     // each character is treated as a segment
-    else {
-      let segments = cut(term);
+    let segments = cut(term);
 
-      // If segment has only one term, immediately use it as a regular entry
+    // Handles segments where the dictionary does not have an entry
+    // by splitting them into their constituent characters
+    for (let i = 0; i < segments.length; i++) {
+      const segment = segments[i];
 
-      // Handles segments where the dictionary does not have an entry
-      // by splitting them into their constituent characters
-      for (let i = 0; i < segments.length; i++) {
-        const segment = segments[i];
+      if (!(segment in charMappings)) {
+        // Inserts characters as segments
+        segments.splice(i, 1, ...segment.split(""));
 
-        if (!(segment in charMappings)) {
-          segments.splice(i, 1, ...segment.split(""));
-          i += segment.length - 1; // Skip over added segments
-        }
+        // Skip over added characters; minus one is to remove the original
+        // segment
+        i += segment.length - 1;
       }
+    }
 
-      // Final check to remove unsanitary segments
-      segments = segments.filter((segment) => segment in charMappings);
-      if (segments.length === 1) {
-        // If the segment is isolated, treat it as if it was an usual single term
-        entries = getDictEntries(segments[0]);
-        entries && setDefinitions(entries);
-      } else if (segments.length > 0) {
-        setSegments(segments);
-      }
+    // Final check to remove unsanitary segments
+    segments = segments.filter((segment) => segment in charMappings);
+
+    // If the segment is isolated, treat it as if it was an usual single term
+    if (segments.length === 1) {
+      entries = getDictEntries(segments[0]);
+      entries && setDefinitions(entries);
+    }
+
+    // Otherwise create suggestions using the segments
+    else if (segments.length > 0) {
+      setSegments(segments);
     }
   };
 
@@ -161,8 +167,6 @@ const App = (): ReactNode => {
         .getType("image/png")
         .then((imageBlob) => blobToBase64(imageBlob))) as string;
 
-      setImage64(image64);
-
       // Recognize text from image using Tesseract OCR and search for it
       const {
         data: { text },
@@ -183,11 +187,13 @@ const App = (): ReactNode => {
 
   return (
     <div className="flex flex-col gap-4 animate-appear">
-      <h1 className="text-xl md:text-2xl text-zinc-100 font-medium">
+      <h1 className="text-zinc-100">
         Chinese English Dictionary
       </h1>
+
+      {/* Instructions; disappears upon searching */}
       {definitions.length === 0 && (
-        <div className="flex flex-col gap-2 text-sm md:text-base text-zinc-200">
+        <div className="body-text flex flex-col gap-2 text-zinc-200">
           <p>
             Input any Chinese character or phrase in the search bar to look up
             its Pinyin and English definition. Text as well as images on the
@@ -200,22 +206,13 @@ const App = (): ReactNode => {
         </div>
       )}
 
-      {image64 && (
-        <img
-          className="h-30 object-cover rounded-lg animate-appear
-            transition duration-300 delay-100 
-            hover:scale-105
-            hover:inset-shadow-sm hover:inset-shadow-indigo-500/50"
-          src={image64}
-        />
-      )}
-
       {/* Search History and Definitions */}
       <DefinitionDeck
         isDisplayed={definitions.length > 0}
         definitions={definitions}
       />
 
+      {/* Input Bar */}
       <div className="flex flex-col sticky bottom-8 gap-2">
         {/* Segment Suggestions */}
         <SegmentSuggestions
@@ -228,7 +225,7 @@ const App = (): ReactNode => {
         <form
           id="search-input"
           className="flex flex-col sm:flex-row gap-2 
-            text-sm md:text-base text-zinc-100 animate-appear"
+            body-text text-zinc-100 animate-appear"
           onSubmit={(e) => e.preventDefault()}
         >
           <div className="rounded-lg bg-zinc-950 flex flex-1">
@@ -236,7 +233,7 @@ const App = (): ReactNode => {
             <input
               autoFocus
               id="character-input"
-              className="min-w-30 px-4 py-3 flex-1 text-ellipsis
+              className="min-w-30 button flex-1 text-ellipsis
                 placeholder:text-zinc-300 placeholder:italic"
               type="text"
               value={searchTerm}
@@ -248,7 +245,7 @@ const App = (): ReactNode => {
 
             {/* Clipboard Paste Button */}
             <button
-              className="px-4 py-3 cursor-pointer
+              className="button
                 transition-color duration-300 hover:text-rose-500
                 disabled:text-zinc-400 disabled:cursor-progress"
               type="button"
@@ -264,12 +261,12 @@ const App = (): ReactNode => {
 
           {/* Search Button */}
           <button
-            className="px-4 py-3 flex items-center bg-rose-600 rounded-lg
-              font-medium cursor-pointer
-              transition-color duration-300 hover:bg-rose-500 active:bg-rose-600"
+            className="button bg-rose-600 font-medium
+              transition-color duration-300 
+              hover:bg-rose-500 active:bg-rose-600"
             onClick={() => enterSearchTerm(searchTerm)}
           >
-            <MagnifyingGlassIcon className="stroke-3 size-5 mr-2" />
+            <MagnifyingGlassIcon className="stroke-3 size-5" />
             Search
           </button>
         </form>
