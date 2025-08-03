@@ -1,4 +1,4 @@
-// React and component
+// React and components
 import { ReactNode, useEffect, useState } from "react";
 import {
   MagnifyingGlassIcon,
@@ -19,6 +19,8 @@ import workerPath from "tesseract.js/dist/worker.min.js?url";
 
 // Will not work on all devices, but works for Chrome Extensions
 import corePath from "tesseract.js-core/tesseract-core-simd.wasm.js?url";
+
+import Resizer from "react-image-file-resizer";
 
 // Imports dictionary entries for Chinese characters and phrases and mappings
 // for traditional and simplified characters
@@ -141,14 +143,32 @@ const App = (): ReactNode => {
    * @param blob Image blob
    * @returns A promise resolving to the image's base 64 encoding
    */
-  const blobToBase64 = async (blob: Blob) => {
+  const blobToBase64 = async (blob: Blob): Promise<string> => {
     const fileReader = new FileReader();
     fileReader.readAsDataURL(blob);
 
     return new Promise((resolve) => {
       fileReader.onloadend = () => {
-        resolve(fileReader.result);
+        resolve(fileReader.result as string);
       };
+    });
+  };
+
+  const upscaleImage = async (blob: Blob): Promise<string> => {
+    const fileReader = new FileReader();
+    fileReader.readAsDataURL(blob);
+
+    return new Promise((resolve) => {
+      Resizer.imageFileResizer(
+        blob, // Image input
+        300, // Width
+        300, // Height
+        "JPEG", // Compression format of image output
+        100, // Quality
+        0, // Rotation
+        (uri) => resolve(uri as string), // Callback
+        "base64" // Image output type
+      );
     });
   };
 
@@ -165,7 +185,7 @@ const App = (): ReactNode => {
     if (clipboard.types.includes("image/png")) {
       const image64 = (await clipboard
         .getType("image/png")
-        .then((imageBlob) => blobToBase64(imageBlob))) as string;
+        .then((imageBlob) => upscaleImage(imageBlob))) as string;
 
       // Recognize text from image using Tesseract OCR and search for it
       const {
@@ -187,9 +207,7 @@ const App = (): ReactNode => {
 
   return (
     <div className="flex flex-col gap-4 animate-appear">
-      <h1 className="text-zinc-100">
-        Chinese English Dictionary
-      </h1>
+      <h1 className="text-zinc-100">Chinese English Dictionary</h1>
 
       {/* Instructions; disappears upon searching */}
       {definitions.length === 0 && (
