@@ -1,31 +1,33 @@
-// React and components
-import { ReactNode, useEffect, useState } from "react";
+/* React and components */
+import { ReactNode, useEffect, useState } from 'react';
 import {
   MagnifyingGlassIcon,
   ClipboardIcon,
-} from "@heroicons/react/24/outline";
+} from '@heroicons/react/24/outline';
 
-import DefinitionDeck, { TermDefinition } from "./components/DefinitionDeck";
-import SegmentSuggestions from "./components/SegmentSuggestions";
-import Spinner from "./components/Spinner";
+import DefinitionDeck, { TermDefinition } from './components/DefinitionDeck';
+import SegmentSuggestions from './components/SegmentSuggestions';
+import Spinner from './components/Spinner';
 
-// Chinese phrase segmenter
-import init, { cut } from "jieba-wasm";
+/* Chinese phrase segmenter */
+import init, { cut } from 'jieba-wasm';
 await init();
 
-// Tesseract OCR
-import { createWorker } from "tesseract.js";
-import workerPath from "tesseract.js/dist/worker.min.js?url";
+/* Tesseract OCR */
+import { createWorker } from 'tesseract.js';
+import workerPath from 'tesseract.js/dist/worker.min.js?url';
 
 // Will not work on all devices, but works for Chrome Extensions
-import corePath from "tesseract.js-core/tesseract-core-simd.wasm.js?url";
+import corePath from 'tesseract.js-core/tesseract-core-simd.wasm.js?url';
 
-import Resizer from "react-image-file-resizer";
+import Resizer from 'react-image-file-resizer';
 
-// Imports dictionary entries for Chinese characters and phrases and mappings
-// for traditional and simplified characters
-const dictEntries = await fetch("cedict-ts.json").then((res) => res.json());
-const charMappings = await fetch("char-mappings.json").then((res) =>
+/*
+ * Imports dictionary entries for Chinese characters and phrases and mappings
+ * for traditional and simplified characters
+ */
+const dictEntries = await fetch('cedict-ts.json').then((res) => res.json());
+const charMappings = await fetch('char-mappings.json').then((res) =>
   res.json()
 );
 
@@ -46,7 +48,7 @@ const getDictEntries = (term: string): TermDefinition[] | null => {
 };
 
 const App = (): ReactNode => {
-  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState<string>('');
   const [segments, setSegments] = useState<string[]>([]);
 
   const [definitions, setDefinitions] = useState<TermDefinition[]>([]);
@@ -60,12 +62,12 @@ const App = (): ReactNode => {
   const [worker, setWorker] = useState<Tesseract.Worker | null>(null);
   useEffect(() => {
     // Attempts to load SIMD core path
-    createWorker(["chi_sim", "chi_tra"], 1, {
+    createWorker(['chi_sim', 'chi_tra'], 1, {
       workerPath,
-      langPath: "trained-data",
+      langPath: 'trained-data',
       corePath,
       workerBlobURL: false,
-      cacheMethod: "refresh",
+      cacheMethod: 'refresh',
     }).then(setWorker);
 
     return () => {
@@ -81,11 +83,11 @@ const App = (): ReactNode => {
    * @param {string} term The phrase to look up
    */
   const enterSearchTerm = (term: string) => {
-    term = term.replaceAll(/\s/g, ""); // Remove all whitespace
+    term = term.replaceAll(/\s/g, ''); // Remove all whitespace
     if (!term) return; // Empty search term
 
     let entries = getDictEntries(term);
-    setSearchTerm("");
+    setSearchTerm('');
 
     // Term is easily found in dictionary
     if (entries) {
@@ -106,7 +108,7 @@ const App = (): ReactNode => {
 
       if (!(segment in charMappings)) {
         // Inserts characters as segments
-        segments.splice(i, 1, ...segment.split(""));
+        segments.splice(i, 1, ...segment.split(''));
 
         // Skip over added characters; minus one is to remove the original
         // segment
@@ -135,7 +137,7 @@ const App = (): ReactNode => {
    * @param {React.KeyboardEvent<HTMLInputElement>} e Browser event
    */
   const handleEnterKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    e.key === "Enter" && enterSearchTerm(searchTerm);
+    e.key === 'Enter' && enterSearchTerm(searchTerm);
   };
 
   /**
@@ -154,24 +156,6 @@ const App = (): ReactNode => {
     });
   };
 
-  const upscaleImage = async (blob: Blob): Promise<string> => {
-    const fileReader = new FileReader();
-    fileReader.readAsDataURL(blob);
-
-    return new Promise((resolve) => {
-      Resizer.imageFileResizer(
-        blob, // Image input
-        300, // Width
-        300, // Height
-        "JPEG", // Compression format of image output
-        100, // Quality
-        0, // Rotation
-        (uri) => resolve(uri as string), // Callback
-        "base64" // Image output type
-      );
-    });
-  };
-
   /**
    * Handles pasting from the clipboard. If text is found, it is used as the
    * search term. If an image is found, it is processed using Tesseract OCR to
@@ -182,26 +166,26 @@ const App = (): ReactNode => {
     const clipboard = (await navigator.clipboard.read())[0];
 
     // Retrieve image from clipboard
-    if (clipboard.types.includes("image/png")) {
+    if (clipboard.types.includes('image/png')) {
       const image64 = (await clipboard
-        .getType("image/png")
-        .then((imageBlob) => upscaleImage(imageBlob))) as string;
+        .getType('image/png')
+        .then(blobToBase64)) as string;
 
       // Recognize text from image using Tesseract OCR and search for it
-      const {
-        data: { text },
-      } = await worker.recognize(image64);
-      text && setSearchTerm(text.replaceAll(/\s/g, ""));
+      worker
+        .recognize(image64)
+        .then(
+          ({ data: { text } }) =>
+            text && setSearchTerm(text.replaceAll(/\s/g, ''))
+        );
     }
 
     // Retrieve text from clipboard
-    else if (clipboard.types.includes("text/plain")) {
+    else if (clipboard.types.includes('text/plain')) {
       clipboard
-        .getType("text/plain")
+        .getType('text/plain')
         .then((textBlob) => textBlob.text())
-        .then((text) => {
-          text && setSearchTerm(searchTerm + text);
-        });
+        .then((text) => text && setSearchTerm(searchTerm + text));
     }
   };
 
