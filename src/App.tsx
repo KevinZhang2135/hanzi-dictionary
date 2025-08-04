@@ -156,6 +156,28 @@ const App = (): ReactNode => {
     });
   };
 
+  const upscaleImage = async (blob: Blob): Promise<string> => {
+    const fileReader = new FileReader();
+    fileReader.readAsDataURL(blob);
+
+    // For some unknown reason, reducing the resolution results in faster and
+    // more accurate OCR
+    return new Promise((resolve) => {
+      Resizer.imageFileResizer(
+        blob, // Image input
+        100, // Max width
+        100, // Max height
+        "PNG", // Compression format of image output
+        100, // Quality
+        0, // Rotation
+        (uri) => resolve(uri as string), // Callback
+        "base64", // Image output type
+        100, // Min width
+        100 // Min height
+      );
+    });
+  };
+
   /**
    * Handles pasting from the clipboard. If text is found, it is used as the
    * search term. If an image is found, it is processed using Tesseract OCR to
@@ -169,7 +191,7 @@ const App = (): ReactNode => {
     if (clipboard.types.includes('image/png')) {
       const image64 = (await clipboard
         .getType('image/png')
-        .then(blobToBase64)) as string;
+        .then(upscaleImage)) as string;
 
       // Recognize text from image using Tesseract OCR and search for it
       worker
