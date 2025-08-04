@@ -141,22 +141,11 @@ const App = (): ReactNode => {
   };
 
   /**
-   * Retrieves the base 64 encoding of an image blob
-   * @param blob Image blob
-   * @returns A promise resolving to the image's base 64 encoding
+   * Reduces resolution of image blob and converts it to its base64 encoding
+   * @param blob Image blob to shrink
+   * @returns A promise resolving to the base64 encoding of the resized image
    */
-  const blobToBase64 = async (blob: Blob): Promise<string> => {
-    const fileReader = new FileReader();
-    fileReader.readAsDataURL(blob);
-
-    return new Promise((resolve) => {
-      fileReader.onloadend = () => {
-        resolve(fileReader.result as string);
-      };
-    });
-  };
-
-  const upscaleImage = async (blob: Blob): Promise<string> => {
+  const scaleImage = async (blob: Blob): Promise<string> => {
     const fileReader = new FileReader();
     fileReader.readAsDataURL(blob);
 
@@ -191,7 +180,7 @@ const App = (): ReactNode => {
     if (clipboard.types.includes('image/png')) {
       const image64 = (await clipboard
         .getType('image/png')
-        .then(upscaleImage)) as string;
+        .then(scaleImage)) as string;
 
       // Recognize text from image using Tesseract OCR and search for it
       worker
