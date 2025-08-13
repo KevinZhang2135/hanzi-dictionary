@@ -53,9 +53,9 @@ const App = (): ReactNode => {
 
   const [definitions, setDefinitions] = useState<TermDefinition[]>([]);
 
-  const clipBoardIcon = <ClipboardIcon className="stroke-2 size-6" />;
+  const clipBoardIcon = <ClipboardIcon className="size-6 stroke-2" />;
   const spinnerIcon = (
-    <Spinner className="stroke-4 size-6 text-zinc-100 rotate-60" />
+    <Spinner className="size-6 rotate-60 stroke-4 text-zinc-100" />
   );
 
   const [workerInProgress, setWorkerInProgress] = useState<boolean>(false);
@@ -156,11 +156,11 @@ const App = (): ReactNode => {
         blob, // Image input
         100, // Max width
         100, // Max height
-        "PNG", // Compression format of image output
+        'PNG', // Compression format of image output
         100, // Quality
         0, // Rotation
         (uri) => resolve(uri as string), // Callback
-        "base64", // Image output type
+        'base64', // Image output type
         100, // Min width
         100 // Min height
       );
@@ -201,7 +201,7 @@ const App = (): ReactNode => {
   };
 
   return (
-    <div className="flex flex-col gap-4 animate-appear">
+    <div className="animate-appear flex flex-col gap-4">
       <h1 className="text-zinc-100">Chinese English Dictionary</h1>
 
       {/* Instructions; disappears upon searching */}
@@ -226,7 +226,7 @@ const App = (): ReactNode => {
       />
 
       {/* Input Bar */}
-      <div className="flex flex-col sticky bottom-8 gap-2">
+      <div className="sticky bottom-8 flex flex-col gap-2">
         {/* Segment Suggestions */}
         <SegmentSuggestions
           isDisplayed={segments.length > 0}
@@ -237,16 +237,16 @@ const App = (): ReactNode => {
         {/* Search Input */}
         <form
           id="search-input"
-          className="flex flex-col sm:flex-row gap-2 
-            body-text text-zinc-100 animate-appear"
+          className="body-text animate-appear flex flex-col 
+            gap-2 text-zinc-100 sm:flex-row"
           onSubmit={(e) => e.preventDefault()}
         >
-          <div className="rounded-lg bg-zinc-950 flex flex-1">
+          <div className="flex flex-1 rounded-lg bg-zinc-950">
             {/* Search Input Field */}
             <input
               autoFocus
               id="character-input"
-              className="min-w-30 button flex-1 text-ellipsis cursor-text!
+              className="button min-w-30 flex-1 cursor-text! text-ellipsis
                 placeholder:text-zinc-300 placeholder:italic"
               type="text"
               value={searchTerm}
@@ -260,7 +260,7 @@ const App = (): ReactNode => {
             <button
               className="button
                 transition-color duration-300 hover:text-rose-500
-                disabled:text-zinc-400 disabled:cursor-progress"
+                disabled:cursor-progress disabled:text-zinc-400"
               type="button"
               disabled={worker === null || workerInProgress}
               onClick={() => {
@@ -274,12 +274,12 @@ const App = (): ReactNode => {
 
           {/* Search Button */}
           <button
-            className="button bg-rose-600 font-medium
-              transition-color duration-300 
+            className="button transition-color bg-rose-600
+              font-medium duration-300 
               hover:bg-rose-500 active:bg-rose-600"
             onClick={() => enterSearchTerm(searchTerm)}
           >
-            <MagnifyingGlassIcon className="stroke-3 size-5" />
+            <MagnifyingGlassIcon className="size-5 stroke-3" />
             Search
           </button>
         </form>
