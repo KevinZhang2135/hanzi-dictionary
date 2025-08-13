@@ -18,8 +18,7 @@ const SegmentSuggestions = (props: {
             key={`segment-suggestion-${segment}-${index}`}
             className="px-2 py-1 bg-zinc-950 rounded-md animate-appear
               transition ease-in-out duration-300 delay-100
-              hover:scale-105 hover:bg-rose-500
-              active:bg-rose-600"
+              hover:scale-105 hover:bg-rose-500 active:bg-rose-600"
             onClick={() => enterSearchTerm(segment)}
           >
             {segment}
