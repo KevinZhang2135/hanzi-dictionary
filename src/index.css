@@ -38,7 +38,7 @@
 }
 
 body {
-  @apply m-auto max-w-200 min-w-75;
+  @apply m-auto min-w-75 max-w-200;
 }
 
 #root {
@@ -46,11 +46,11 @@ body {
 }
 
 h1 {
-  @apply text-xl font-medium md:text-2xl;
+  @apply text-xl md:text-2xl font-medium;
 }
 
 .button {
-  @apply flex items-center gap-2 rounded-lg px-4 py-3 enabled:cursor-pointer;
+  @apply px-4 py-3 flex items-center gap-2 rounded-lg enabled:cursor-pointer;
 }
 
 .body-text {

@@ -25,6 +25,9 @@ build
 *.sln
 *.sw?
 
+.eslintrc.cjs
+.prettierrc
+
 # Python Venv and Dependency Mangagement
 .venv
 

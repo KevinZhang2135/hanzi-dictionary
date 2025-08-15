@@ -201,7 +201,7 @@ const App = (): ReactNode => {
   };
 
   return (
-    <div className="animate-appear flex flex-col gap-4">
+    <div className="flex flex-col gap-4 animate-appear">
       <h1 className="text-zinc-100">Chinese English Dictionary</h1>
 
       {/* Instructions; disappears upon searching */}
@@ -237,16 +237,16 @@ const App = (): ReactNode => {
         {/* Search Input */}
         <form
           id="search-input"
-          className="body-text animate-appear flex flex-col 
-            gap-2 text-zinc-100 sm:flex-row"
+          className="body-text flex flex-col sm:flex-row gap-2 
+            text-zinc-100 animate-appear"
           onSubmit={(e) => e.preventDefault()}
         >
-          <div className="flex flex-1 rounded-lg bg-zinc-950">
+          <div className="flex flex-1 bg-zinc-950 rounded-lg">
             {/* Search Input Field */}
             <input
               autoFocus
               id="character-input"
-              className="button min-w-30 flex-1 cursor-text! text-ellipsis
+              className="button min-w-30 flex-1 text-ellipsis cursor-text!
                 placeholder:text-zinc-300 placeholder:italic"
               type="text"
               value={searchTerm}
@@ -274,9 +274,8 @@ const App = (): ReactNode => {
 
           {/* Search Button */}
           <button
-            className="button transition-color bg-rose-600
-              font-medium duration-300 
-              hover:bg-rose-500 active:bg-rose-600"
+            className="button transition-color bg-rose-600 font-medium
+              duration-300 hover:bg-rose-500 active:bg-rose-600"
             onClick={() => enterSearchTerm(searchTerm)}
           >
             <MagnifyingGlassIcon className="size-5 stroke-3" />
