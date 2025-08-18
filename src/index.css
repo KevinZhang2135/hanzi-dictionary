@@ -43,10 +43,12 @@ h1 {
   @apply text-xl md:text-2xl font-medium;
 }
 
-.button {
-  @apply px-4 py-3 flex items-center gap-2 rounded-lg enabled:cursor-pointer;
-}
+@layer components {
+  .button {
+    @apply px-4 py-3 flex items-center gap-2 rounded-lg enabled:cursor-pointer;
+  }
 
-.body-text {
-  @apply text-sm md:text-base;
+  .body-text {
+    @apply text-sm md:text-base;
+  }
 }
