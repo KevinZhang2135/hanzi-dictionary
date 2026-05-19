@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@100..900&family=Noto+Sans+TC:wght@100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 @import 'tailwindcss';
 
 @theme {
@@ -20,7 +21,7 @@
 }
 
 :root {
-  font-family: sans-serif;
+  font-family: 'Noto Sans' sans-serif;
 
   color-scheme: dark;
   background-color: #1a1a1a;

@@ -9,18 +9,15 @@ import DefinitionDeck, { TermDefinition } from './components/DefinitionDeck';
 import SegmentSuggestions from './components/SegmentSuggestions';
 import Spinner from './components/Spinner';
 
-/* Chinese phrase segmenter */
-import init, { cut } from 'jieba-wasm';
-await init();
+/* Chinese segmenter */
+const segmenterZh = new Intl.Segmenter('zh', { granularity: 'word' });
 
-/* Tesseract OCR */
-import { createWorker } from 'tesseract.js';
-import workerPath from 'tesseract.js/dist/worker.min.js?url';
-
-// Will not work on all devices, but works for Chrome Extensions
-import corePath from 'tesseract.js-core/tesseract-core-simd.wasm.js?url';
-
-import Resizer from 'react-image-file-resizer';
+/*
+ * PaddleOCR by Baidu
+ * Tesseract works as well, but PaddleOCR handles better with CJK characters
+ */
+// import * as ocr from '@paddlejs-models/ocr';
+// await (ocr as any).init();
 
 /*
  * Imports dictionary entries for Chinese characters and phrases and mappings
@@ -31,49 +28,40 @@ const charMappings = await fetch('char-mappings.json').then((res) =>
   res.json()
 );
 
+/*
+ * Icons and graphics
+ */
+const clipBoardIcon = <ClipboardIcon className="size-6 stroke-2" />;
+const spinnerIcon = (
+  <Spinner className="size-6 rotate-60 stroke-4 text-zinc-100" />
+);
+
 /**
  * Retrieves the dictionary entries for a specified term.
  * @param {string} term The specified character or phrase to retrieve the
  *   dictionary entry for
- * @returns A list of dictionary entry objects for the specified term, or null if the
- *   term does not exist
+ * @returns A list of dictionary entry objects for the specified term, or []
+ *   if the term does not exist
  */
-const getDictEntries = (term: string): TermDefinition[] | null => {
-  // Check if the term exists in the dictionary entries
+const getDictEntries = (term: string): TermDefinition[] => {
+  // Check if the term exists in the dictionary entries and retrieves all
+  // definitions associated with the term.
   if (term in charMappings) {
     return charMappings[term].map((index: number) => dictEntries[index]);
   }
 
-  return null;
+  return [];
 };
 
 const App = (): ReactNode => {
+  // The text within the main search bar
   const [searchTerm, setSearchTerm] = useState<string>('');
+
+  // The sequence of words within `searchTerm`
   const [segments, setSegments] = useState<string[]>([]);
 
+  // The set of definitions associated with `searchTerm`
   const [definitions, setDefinitions] = useState<TermDefinition[]>([]);
-
-  const clipBoardIcon = <ClipboardIcon className="size-6 stroke-2" />;
-  const spinnerIcon = (
-    <Spinner className="size-6 rotate-60 stroke-4 text-zinc-100" />
-  );
-
-  const [workerInProgress, setWorkerInProgress] = useState<boolean>(false);
-  const [worker, setWorker] = useState<Tesseract.Worker | null>(null);
-  useEffect(() => {
-    // Attempts to load SIMD core path
-    createWorker(['chi_sim', 'chi_tra'], 1, {
-      workerPath,
-      langPath: 'trained-data',
-      corePath,
-      workerBlobURL: false,
-      cacheMethod: 'refresh',
-    }).then(setWorker);
-
-    return () => {
-      worker?.terminate();
-    };
-  }, []);
 
   /**
    * Looks up the term in the dictionary and clears the {@code searchTerm}. If
@@ -85,43 +73,29 @@ const App = (): ReactNode => {
   const enterSearchTerm = (term: string) => {
     term = term.replaceAll(/\s/g, ''); // Remove all whitespace
     if (!term) return; // Empty search term
+    setSearchTerm(''); // Clears text in the main search bar
 
-    let entries = getDictEntries(term);
-    setSearchTerm('');
+    // Attempts to segment the term into smaller sub-terms. Some words will not
+    // be in the dictionary.
+    // If the words are not in the dictionary, split it into its constituent
+    // characters that are in the dictionary
+    const segments = Array.from(segmenterZh.segment(term)).reduce(
+      (acc, { segment }) => {
+        if (segment in charMappings) {
+          return [...acc, segment];
+        }
 
-    // Term is easily found in dictionary
-    if (entries) {
-      setDefinitions(entries);
-      return;
-    }
-
-    // Otherwise, the term is not immediately in the dictionary.
-
-    // Attempts to segment the term into smaller sub-terms. If none found,
-    // each character is treated as a segment
-    let segments = cut(term);
-
-    // Handles segments where the dictionary does not have an entry
-    // by splitting them into their constituent characters
-    for (let i = 0; i < segments.length; i++) {
-      const segment = segments[i];
-
-      if (!(segment in charMappings)) {
-        // Inserts characters as segments
-        segments.splice(i, 1, ...segment.split(''));
-
-        // Skip over added characters; minus one is to remove the original
-        // segment
-        i += segment.length - 1;
-      }
-    }
-
-    // Final check to remove unsanitary segments
-    segments = segments.filter((segment) => segment in charMappings);
+        return [
+          ...acc,
+          ...segment.split('').filter((char) => char in charMappings),
+        ];
+      },
+      [] as string[]
+    );
 
     // If the segment is isolated, treat it as if it was an usual single term
     if (segments.length === 1) {
-      entries = getDictEntries(segments[0]);
+      let entries = getDictEntries(segments[0]);
       entries && setDefinitions(entries);
     }
 
@@ -141,63 +115,31 @@ const App = (): ReactNode => {
   };
 
   /**
-   * Reduces resolution of image blob and converts it to its base64 encoding
-   * @param blob Image blob to shrink
-   * @returns A promise resolving to the base64 encoding of the resized image
-   */
-  const scaleImage = async (blob: Blob): Promise<string> => {
-    const fileReader = new FileReader();
-    fileReader.readAsDataURL(blob);
-
-    // For some unknown reason, reducing the resolution results in faster and
-    // more accurate OCR
-    return new Promise((resolve) => {
-      Resizer.imageFileResizer(
-        blob, // Image input
-        100, // Max width
-        100, // Max height
-        'PNG', // Compression format of image output
-        100, // Quality
-        0, // Rotation
-        (uri) => resolve(uri as string), // Callback
-        'base64', // Image output type
-        100, // Min width
-        100 // Min height
-      );
-    });
-  };
-
-  /**
    * Handles pasting from the clipboard. If text is found, it is used as the
    * search term. If an image is found, it is processed using Tesseract OCR to
    * extract text before being used as the search term.
    */
   const handleClipboardPaste = async () => {
-    if (!worker) return;
-    const clipboard = (await navigator.clipboard.read())[0];
-
-    // Retrieve image from clipboard
-    if (clipboard.types.includes('image/png')) {
-      const image64 = (await clipboard
-        .getType('image/png')
-        .then(scaleImage)) as string;
-
-      // Recognize text from image using Tesseract OCR and search for it
-      worker
-        .recognize(image64)
-        .then(
-          ({ data: { text } }) =>
-            text && setSearchTerm(text.replaceAll(/\s/g, ''))
-        );
-    }
-
-    // Retrieve text from clipboard
-    else if (clipboard.types.includes('text/plain')) {
-      clipboard
-        .getType('text/plain')
-        .then((textBlob) => textBlob.text())
-        .then((text) => text && setSearchTerm(searchTerm + text));
-    }
+    // if (!worker) return;
+    // const clipboard = (await navigator.clipboard.read())[0];
+    // // Retrieve image from clipboard
+    // if (clipboard.types.includes('image/png')) {
+    //   const image64 = await clipboard.getType('image/png');
+    //   // Recognize text from image using Tesseract OCR and search for it
+    //   worker
+    //     .recognize(image64)
+    //     .then(
+    //       ({ data: { text } }) =>
+    //         text && setSearchTerm(text.replaceAll(/\s/g, ''))
+    //     );
+    // }
+    // // Retrieve text from clipboard
+    // else if (clipboard.types.includes('text/plain')) {
+    //   clipboard
+    //     .getType('text/plain')
+    //     .then((textBlob) => textBlob.text())
+    //     .then((text) => text && setSearchTerm(searchTerm + text));
+    // }
   };
 
   return (
@@ -262,13 +204,13 @@ const App = (): ReactNode => {
                 transition-color duration-300 hover:text-rose-500
                 disabled:cursor-progress disabled:text-zinc-400"
               type="button"
-              disabled={worker === null || workerInProgress}
-              onClick={() => {
-                setWorkerInProgress(true);
-                handleClipboardPaste().then(() => setWorkerInProgress(false));
-              }}
+              // disabled={worker === null || workerInProgress}
+              // onClick={() => {
+              //   setWorkerInProgress(true);
+              //   handleClipboardPaste().then(() => setWorkerInProgress(false));
+              // }}
             >
-              {workerInProgress ? spinnerIcon : clipBoardIcon}
+              {clipBoardIcon}
             </button>
           </div>
 

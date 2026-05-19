@@ -14,14 +14,12 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+    "@paddlejs-models/ocr": "^1.2.4",
     "@tailwindcss/vite": "^4.1.7",
     "gh-pages": "^6.3.0",
-    "jieba-wasm": "^2.2.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-image-file-resizer": "^0.4.8",
-    "tailwindcss": "^4.1.7",
-    "tesseract.js": "^6.0.1"
+    "tailwindcss": "^4.1.7"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",
@@ -33,7 +31,6 @@
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-react-refresh": "^0.4.7",
     "typescript": "^5.2.2",
-    "vite": "^6.3.5",
-    "vite-plugin-static-copy": "^3.0.0"
+    "vite": "^6.3.5"
   }
 }
