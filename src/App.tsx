@@ -147,7 +147,11 @@ const App = (): ReactNode => {
       className="m-auto min-w-75 max-w-200 min-h-screen px-4 md:px-8
         flex flex-col text-zinc-100 animate-appear"
     >
-      <h1 className="sticky top-0 py-4 bg-neutral-900">
+      <h1
+        className="sticky top-0 py-4 
+          bg-linear-to-b from-30% from-neutral-900 to-transparent 
+          backdrop-blur-xs"
+      >
         Chinese English Dictionary
       </h1>
 
@@ -171,12 +175,16 @@ const App = (): ReactNode => {
         isDisplayed={definitions.length > 0}
         definitions={definitions}
       />
+      <DefinitionDeck
+        isDisplayed={definitions.length > 0}
+        definitions={definitions}
+      />
 
       {/* Input Bar */}
       <div
         className={`${definitions.length > 0 ? 'sticky bottom-0' : ''} 
           py-4 flex flex-col gap-2
-          bg-linear-to-t from-20% from-neutral-900 to-transparent`}
+          bg-linear-to-t from-30% from-neutral-900 to-transparent`}
       >
         {/* Segment Suggestions */}
         <SegmentSuggestions
