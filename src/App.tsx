@@ -143,12 +143,17 @@ const App = (): ReactNode => {
   };
 
   return (
-    <div className="flex flex-col gap-4 animate-appear">
-      <h1 className="text-zinc-100">Chinese English Dictionary</h1>
+    <div
+      className="m-auto min-w-75 max-w-200 min-h-screen px-4 md:px-8
+        flex flex-col text-zinc-100 animate-appear"
+    >
+      <h1 className="sticky top-0 py-4 bg-neutral-900">
+        Chinese English Dictionary
+      </h1>
 
       {/* Instructions; disappears upon searching */}
       {definitions.length === 0 && (
-        <div className="body-text flex flex-col gap-2 text-zinc-200">
+        <div className="flex flex-col gap-2 body-text text-zinc-300">
           <p>
             Input any Chinese character or phrase in the search bar to look up
             its Pinyin and English definition. Text as well as images on the
@@ -168,7 +173,11 @@ const App = (): ReactNode => {
       />
 
       {/* Input Bar */}
-      <div className="sticky bottom-8 flex flex-col gap-2">
+      <div
+        className={`${definitions.length > 0 ? 'sticky bottom-0' : ''} 
+          py-4 flex flex-col gap-2
+          bg-linear-to-t from-20% from-neutral-900 to-transparent`}
+      >
         {/* Segment Suggestions */}
         <SegmentSuggestions
           isDisplayed={segments.length > 0}
@@ -179,40 +188,37 @@ const App = (): ReactNode => {
         {/* Search Input */}
         <form
           id="search-input"
-          className="body-text flex flex-col sm:flex-row gap-2 
-            text-zinc-100 animate-appear"
+          className="body-text flex bg-zinc-950/50 rounded-lg backdrop-blur-xs"
           onSubmit={(e) => e.preventDefault()}
         >
-          <div className="flex flex-1 bg-zinc-950 rounded-lg">
-            {/* Search Input Field */}
-            <input
-              autoFocus
-              id="character-input"
-              className="button min-w-30 flex-1 text-ellipsis cursor-text
-                placeholder:text-zinc-300 placeholder:italic"
-              type="text"
-              value={searchTerm}
-              placeholder="Enter a Chinese character or phrase"
-              autoComplete="off"
-              onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyDown={(e) => handleEnterKey(e)}
-            />
+          {/* Search Input Field */}
+          <input
+            autoFocus
+            id="character-input"
+            className="button min-w-30 mr-2 flex-1 text-ellipsis cursor-text
+              placeholder:text-zinc-300 placeholder:italic"
+            type="text"
+            value={searchTerm}
+            placeholder="Enter a Chinese character or phrase"
+            autoComplete="off"
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyDown={(e) => handleEnterKey(e)}
+          />
 
-            {/* Clipboard Paste Button */}
-            <button
-              className="button
+          {/* Clipboard Paste Button */}
+          <button
+            className="button
                 transition-color duration-300 hover:text-rose-500
                 disabled:cursor-progress disabled:text-zinc-400"
-              type="button"
-              // disabled={worker === null || workerInProgress}
-              // onClick={() => {
-              //   setWorkerInProgress(true);
-              //   handleClipboardPaste().then(() => setWorkerInProgress(false));
-              // }}
-            >
-              {clipBoardIcon}
-            </button>
-          </div>
+            type="button"
+            // disabled={worker === null || workerInProgress}
+            // onClick={() => {
+            //   setWorkerInProgress(true);
+            //   handleClipboardPaste().then(() => setWorkerInProgress(false));
+            // }}
+          >
+            {clipBoardIcon}
+          </button>
 
           {/* Search Button */}
           <button
@@ -221,7 +227,6 @@ const App = (): ReactNode => {
             onClick={() => enterSearchTerm(searchTerm)}
           >
             <MagnifyingGlassIcon className="size-5 stroke-3" />
-            Search
           </button>
         </form>
       </div>

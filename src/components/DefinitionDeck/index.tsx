@@ -20,7 +20,7 @@ const DefinitionDeck = ({
 
   if (!isDisplayed) return;
   return (
-    <div className="flex flex-col gap-2">
+    <div className="grow flex flex-col gap-4">
       {definitions.map((element, index) => {
         const definition = element as unknown as TermDefinition;
 
