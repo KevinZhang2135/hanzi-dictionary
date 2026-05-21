@@ -13,7 +13,7 @@ import Spinner from './components/Spinner';
 const segmenterZh = new Intl.Segmenter('zh', { granularity: 'word' });
 
 /*
- * PaddleOCR by Baidu
+ * Uses PaddleOCR by Baidu for recognizing characters in the clipboard
  * Tesseract works as well, but PaddleOCR handles better with CJK characters
  */
 // import * as ocr from '@paddlejs-models/ocr';
@@ -75,9 +75,15 @@ const App = (): ReactNode => {
     if (!term) return; // Empty search term
     setSearchTerm(''); // Clears text in the main search bar
 
-    // Attempts to segment the term into smaller sub-terms. Some words will not
-    // be in the dictionary.
-    // If the words are not in the dictionary, split it into its constituent
+    // Attempts to directly search the term; some slang terms may not be
+    // recognized by the segmenter
+    if (term in charMappings) {
+      setDefinitions(getDictEntries(term));
+      return;
+    }
+
+    // Otherwise, attempts to segment the term into smaller sub-terms.
+    // If the term is not in the dictionary, split it into its constituent
     // characters that are in the dictionary
     const segments = Array.from(segmenterZh.segment(term)).reduce(
       (acc, { segment }) => {
