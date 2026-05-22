@@ -3,7 +3,7 @@ import readline from 'readline';
 import { convert } from 'pinyin-pro';
 
 // Assumes the parser is run from the root directory
-const INPUT_CEDICT_PATH = 'public/cedict_ts.u8';
+const INPUT_CEDICT_PATH = 'src/cedict_ts.u8';
 const OUTPUT_MAPPINGS_PATH = 'public/char-mappings.json';
 const OUTPUT_DICTIONARY_PATH = 'public/cedict-ts.json';
 

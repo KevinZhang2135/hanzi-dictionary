@@ -16,8 +16,15 @@ const segmenterZh = new Intl.Segmenter('zh', { granularity: 'word' });
  * Uses PaddleOCR by Baidu for recognizing characters in the clipboard
  * Tesseract works as well, but PaddleOCR handles better with CJK characters
  */
-// import * as ocr from '@paddlejs-models/ocr';
-// await (ocr as any).init();
+// import { PaddleOCR } from '@paddleocr/paddleocr-js';
+// const ocr = await PaddleOCR.create({
+//   lang: 'ch',
+//   ortOptions: { wasmPaths: '/wasm/', simd: false },
+//   models: {
+//     det: 'models/PP-OCRv5_server_det_infer.onnx',
+//     rec: 'models/PP-OCRv5_server_rec_infer.onnx',
+//   },
+// });
 
 /*
  * Imports dictionary entries for Chinese characters and phrases and mappings
@@ -62,6 +69,8 @@ const App = (): ReactNode => {
 
   // The set of definitions associated with `searchTerm`
   const [definitions, setDefinitions] = useState<TermDefinition[]>([]);
+
+  // Initializes PaddleOCR
 
   /**
    * Looks up the term in the dictionary and clears the {@code searchTerm}. If
@@ -127,25 +136,32 @@ const App = (): ReactNode => {
    */
   const handleClipboardPaste = async () => {
     // if (!worker) return;
-    // const clipboard = (await navigator.clipboard.read())[0];
-    // // Retrieve image from clipboard
-    // if (clipboard.types.includes('image/png')) {
-    //   const image64 = await clipboard.getType('image/png');
-    //   // Recognize text from image using Tesseract OCR and search for it
-    //   worker
-    //     .recognize(image64)
-    //     .then(
-    //       ({ data: { text } }) =>
-    //         text && setSearchTerm(text.replaceAll(/\s/g, ''))
-    //     );
-    // }
-    // // Retrieve text from clipboard
-    // else if (clipboard.types.includes('text/plain')) {
-    //   clipboard
-    //     .getType('text/plain')
-    //     .then((textBlob) => textBlob.text())
-    //     .then((text) => text && setSearchTerm(searchTerm + text));
-    // }
+    const clipboard = (await navigator.clipboard.read())[0];
+    // Retrieve image from clipboard
+    if (clipboard.types.includes('image/png')) {
+      console.log('Handling clipboard image');
+      const image64 = await clipboard.getType('image/png');
+      // ocr.predict(image64).then((data) => console.log(data[0]));
+      // Recognize text from image using Paddle OCR and search for it
+      // processImage
+      //   .recognize(await image64.arrayBuffer())
+      //   .then((data: any) => console.log(data));
+
+      // ocr
+      //   .recognize(image64)
+      //   .then(
+      //     ({ data: { text } }) =>
+      //       text && setSearchTerm(text.replaceAll(/\s/g, ''))
+      //   );
+    }
+
+    // Retrieve text from clipboard
+    else if (clipboard.types.includes('text/plain')) {
+      clipboard
+        .getType('text/plain')
+        .then((textBlob) => textBlob.text())
+        .then((text) => text && setSearchTerm(searchTerm + text));
+    }
   };
 
   return (
@@ -181,10 +197,6 @@ const App = (): ReactNode => {
         isDisplayed={definitions.length > 0}
         definitions={definitions}
       />
-      <DefinitionDeck
-        isDisplayed={definitions.length > 0}
-        definitions={definitions}
-      />
 
       {/* Input Bar */}
       <div
@@ -209,7 +221,7 @@ const App = (): ReactNode => {
           <input
             autoFocus
             id="character-input"
-            className="button min-w-30 mr-2 flex-1 text-ellipsis cursor-text
+            className="button min-w-30 flex-1 text-ellipsis cursor-text
               placeholder:text-zinc-300 placeholder:italic"
             type="text"
             value={searchTerm}
@@ -222,14 +234,10 @@ const App = (): ReactNode => {
           {/* Clipboard Paste Button */}
           <button
             className="button
-                transition-color duration-300 hover:text-rose-500
-                disabled:cursor-progress disabled:text-zinc-400"
+              transition-color duration-300 hover:text-rose-500
+              disabled:cursor-progress disabled:text-zinc-400"
             type="button"
-            // disabled={worker === null || workerInProgress}
-            // onClick={() => {
-            //   setWorkerInProgress(true);
-            //   handleClipboardPaste().then(() => setWorkerInProgress(false));
-            // }}
+            onClick={handleClipboardPaste}
           >
             {clipBoardIcon}
           </button>

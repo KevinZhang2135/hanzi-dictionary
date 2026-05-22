@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -7,6 +7,12 @@
     <link rel="icon" type="image/png" href="/icons/icon-16.png" />
     <link href="/src/index.css" rel="stylesheet" />
     <title>Hanzi Dictionary Chrome Extension</title>
+
+    <script>
+      window.Module = {
+        onRuntimeInitialized: () => console.log('Paddle OCR WASM is ready.'),
+      };
+    </script>
   </head>
 
   <body>
